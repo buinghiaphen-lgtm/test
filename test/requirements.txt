@@ -1,0 +1,6 @@
+pytest
+redis
+kafka-python
+pylightxl
+kubernetes
+pymysql
