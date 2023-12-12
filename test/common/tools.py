@@ -103,235 +103,255 @@ def clear_win_ticket_prize_message():
         consumer.commit()
 
 def consume_bd_ticket_message(count:int):
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
-                                  enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
-    consumer.assign([TopicPartition('bd_ticket', 0)])
-    t_count = 0
-    data_list = []
-    for message in consumer:
-        consumer.commit()
-        logger.info('bd_ticket最初的kafka的数据-----')
-        logger.info(message.value)
-        temp_list = []
-        temp_count = 0
-        m_json = json.loads(message.value.decode('utf-8'))
-        m_json_len = len(m_json)
-        if m_json_len > 1:
-            temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
-            for i in range(m_json_len):
-                temp_list.extend(m_json[i]['data'])
-        else:
-            temp_count += int(len(m_json[0]['data']))
-            temp_list.extend(m_json[0]['data'])
-        # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
-        if all(x in data_list for x in temp_list):
-            #print("temp_list包含在data_list中")
-            pass
-        else:
-            # print("temp_list不包含在data_list中")
-            data_list.extend(temp_list)
-            t_count += temp_count
-        if t_count == count:
-            # return data_list
-            return data_list
-        elif t_count > count:
-            return data_list
-        # 在这里提交已消费过
-
-    return data_list
+    if count == 1:
+        return []
+    else:
+        count = count - 1
+        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+                                      enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
+        consumer.assign([TopicPartition('bd_ticket', 0)])
+        t_count = 0
+        data_list = []
+        for message in consumer:
+            consumer.commit()
+            logger.info('bd_ticket最初的kafka的数据-----')
+            logger.info(message.value)
+            temp_list = []
+            temp_count = 0
+            m_json = json.loads(message.value.decode('utf-8'))
+            m_json_len = len(m_json)
+            if m_json_len > 1:
+                temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
+                for i in range(m_json_len):
+                    temp_list.extend(m_json[i]['data'])
+            else:
+                temp_count += int(len(m_json[0]['data']))
+                temp_list.extend(m_json[0]['data'])
+            # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
+            if all(x in data_list for x in temp_list):
+                #print("temp_list包含在data_list中")
+                pass
+            else:
+                # print("temp_list不包含在data_list中")
+                data_list.extend(temp_list)
+                t_count += temp_count
+            if t_count == count:
+                # return data_list
+                return data_list
+            elif t_count > count:
+                return data_list
+            # 在这里提交已消费过
+        return data_list
 
 def consume_bd_cancel_ticket_message(count:int):
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
-                                  enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
-    consumer.assign([TopicPartition('bd_cancel_ticket', 0)])
-    t_count = 0
-    data_list = []
-    for message in consumer:
-        logger.info('最初的kafka的数据-----')
-        logger.info(message.value)
-        temp_list = []
-        temp_count = 0
-        m_json = json.loads(message.value.decode('utf-8'))
-        m_json_len = len(m_json)
-        if m_json_len > 1:
-            temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
-            for i in range(m_json_len):
-                temp_list.extend(m_json[i]['data'])
-        else:
-            temp_count += int(len(m_json[0]['data']))
-            temp_list.extend(m_json[0]['data'])
-        # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
-        if all(x in data_list for x in temp_list):
-            #print("temp_list包含在data_list中")
-            pass
-        else:
-            # print("temp_list不包含在data_list中")
-            data_list.extend(temp_list)
-            t_count += temp_count
+    if count == 1:
+        return []
+    else:
+        count = count - 1
+        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+                                      enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
+        consumer.assign([TopicPartition('bd_cancel_ticket', 0)])
+        t_count = 0
+        data_list = []
+        for message in consumer:
+            consumer.commit()
+            logger.info('最初的kafka的数据-----')
+            logger.info(message.value)
+            temp_list = []
+            temp_count = 0
+            m_json = json.loads(message.value.decode('utf-8'))
+            m_json_len = len(m_json)
+            if m_json_len > 1:
+                temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
+                for i in range(m_json_len):
+                    temp_list.extend(m_json[i]['data'])
+            else:
+                temp_count += int(len(m_json[0]['data']))
+                temp_list.extend(m_json[0]['data'])
+            # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
+            if all(x in data_list for x in temp_list):
+                #print("temp_list包含在data_list中")
+                pass
+            else:
+                # print("temp_list不包含在data_list中")
+                data_list.extend(temp_list)
+                t_count += temp_count
 
-        if t_count == count:
-            # return data_list
-            return data_list
-        elif t_count > count:
-            return data_list
-        # 在这里提交已消费过
-        consumer.commit()
-    return data_list
+            if t_count == count:
+                # return data_list
+                return data_list
+            elif t_count > count:
+                return data_list
+            # 在这里提交已消费过
+        return data_list
 
 def consume_bd_undo_ticket_message(count:int):
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
-                                  enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
-    consumer.assign([TopicPartition('bd_undo_ticket', 0)])
-    t_count = 0
-    data_list = []
-    for message in consumer:
-        # 在这里提交已消费过
-        consumer.commit()
-        logger.info('最初的kafka的数据-----')
-        logger.info(message.value)
-        temp_list = []
-        temp_count = 0
-        m_json = json.loads(message.value.decode('utf-8'))
-        m_json_len = len(m_json)
-        if m_json_len > 1:
-            temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
-            for i in range(m_json_len):
-                temp_list.extend(m_json[i]['data'])
-        else:
-            temp_count += int(len(m_json[0]['data']))
-            temp_list.extend(m_json[0]['data'])
-        # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
-        if all(x in data_list for x in temp_list):
-            #print("temp_list包含在data_list中")
-            pass
-        else:
-            # print("temp_list不包含在data_list中")
-            data_list.extend(temp_list)
-            t_count += temp_count
+    if count == 1:
+        return []
+    else:
+        count = count - 1
+        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+                                      enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
+        consumer.assign([TopicPartition('bd_undo_ticket', 0)])
+        t_count = 0
+        data_list = []
+        for message in consumer:
+            # 在这里提交已消费过
+            consumer.commit()
+            logger.info('最初的kafka的数据-----')
+            logger.info(message.value)
+            temp_list = []
+            temp_count = 0
+            m_json = json.loads(message.value.decode('utf-8'))
+            m_json_len = len(m_json)
+            if m_json_len > 1:
+                temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
+                for i in range(m_json_len):
+                    temp_list.extend(m_json[i]['data'])
+            else:
+                temp_count += int(len(m_json[0]['data']))
+                temp_list.extend(m_json[0]['data'])
+            # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
+            if all(x in data_list for x in temp_list):
+                #print("temp_list包含在data_list中")
+                pass
+            else:
+                # print("temp_list不包含在data_list中")
+                data_list.extend(temp_list)
+                t_count += temp_count
 
-        if t_count == count:
-            # return data_list
-            return data_list
-        elif t_count > count:
-            return data_list
-
-    return data_list
+            if t_count == count:
+                # return data_list
+                return data_list
+            elif t_count > count:
+                return data_list
+        return data_list
 
 def consume_bd_win_ticket_message(count:int):
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
-                                  enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
-    consumer.assign([TopicPartition('bd_win_ticket', 0)])
-    t_count = 0
-    data_list = []
-    for message in consumer:
-        # 在这里提交已消费过
-        consumer.commit()
-        logger.info('bd_win_ticket最初的kafka的数据-----')
-        logger.info(message.value)
-        temp_list = []
-        temp_count = 0
-        m_json = json.loads(message.value.decode('utf-8'))
-        m_json_len = len(m_json)
-        if m_json_len > 1:
-            temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
-            for i in range(m_json_len):
-                temp_list.extend(m_json[i]['data'])
-        else:
-            temp_count += int(len(m_json[0]['data']))
-            temp_list.extend(m_json[0]['data'])
-        # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
-        if all(x in data_list for x in temp_list):
-            #print("temp_list包含在data_list中")
-            pass
-        else:
-            # print("temp_list不包含在data_list中")
-            data_list.extend(temp_list)
-            t_count += temp_count
+    if count == 1:
+        return []
+    else:
+        count = count - 1
+        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+                                      enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
+        consumer.assign([TopicPartition('bd_win_ticket', 0)])
+        t_count = 0
+        data_list = []
+        for message in consumer:
+            # 在这里提交已消费过
+            consumer.commit()
+            logger.info('bd_win_ticket最初的kafka的数据-----')
+            logger.info(message.value)
+            temp_list = []
+            temp_count = 0
+            m_json = json.loads(message.value.decode('utf-8'))
+            m_json_len = len(m_json)
+            if m_json_len > 1:
+                temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
+                for i in range(m_json_len):
+                    temp_list.extend(m_json[i]['data'])
+            else:
+                temp_count += int(len(m_json[0]['data']))
+                temp_list.extend(m_json[0]['data'])
+            # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
+            if all(x in data_list for x in temp_list):
+                #print("temp_list包含在data_list中")
+                pass
+            else:
+                # print("temp_list不包含在data_list中")
+                data_list.extend(temp_list)
+                t_count += temp_count
 
-        if t_count == count:
-            # return data_list
-            return data_list
-        elif t_count > count:
-            return data_list
-
-    return data_list
+            if t_count == count:
+                # return data_list
+                return data_list
+            elif t_count > count:
+                return data_list
+        return data_list
 
 def consume_bd_paid_ticket_message(count:int):
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
-                                  enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
-    consumer.assign([TopicPartition('bd_paid_ticket', 0)])
-    t_count = 0
-    data_list = []
-    for message in consumer:
-        # 在这里提交已消费过
-        consumer.commit()
-        logger.info('bd_paid_ticket最初的kafka的数据-----')
-        logger.info(message.value)
-        temp_list = []
-        temp_count = 0
-        m_json = json.loads(message.value.decode('utf-8'))
-        m_json_len = len(m_json)
-        if m_json_len > 1:
-            temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
-            for i in range(m_json_len):
-                temp_list.extend(m_json[i]['data'])
-        else:
-            temp_count += int(len(m_json[0]['data']))
-            temp_list.extend(m_json[0]['data'])
-        # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
-        if all(x in data_list for x in temp_list):
-            #print("temp_list包含在data_list中")
-            pass
-        else:
-            # print("temp_list不包含在data_list中")
-            data_list.extend(temp_list)
-            t_count += temp_count
+    if count == 1:
+        return []
+    else:
+        count = count - 1
+        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+                                      enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
+        consumer.assign([TopicPartition('bd_paid_ticket', 0)])
+        t_count = 0
+        data_list = []
+        for message in consumer:
+            # 在这里提交已消费过
+            consumer.commit()
+            logger.info('bd_paid_ticket最初的kafka的数据-----')
+            logger.info(message.value)
+            temp_list = []
+            temp_count = 0
+            m_json = json.loads(message.value.decode('utf-8'))
+            m_json_len = len(m_json)
+            if m_json_len > 1:
+                temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
+                for i in range(m_json_len):
+                    temp_list.extend(m_json[i]['data'])
+            else:
+                temp_count += int(len(m_json[0]['data']))
+                temp_list.extend(m_json[0]['data'])
+            # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
+            if all(x in data_list for x in temp_list):
+                #print("temp_list包含在data_list中")
+                pass
+            else:
+                # print("temp_list不包含在data_list中")
+                data_list.extend(temp_list)
+                t_count += temp_count
 
-        if t_count == count:
-            # return data_list
-            return data_list
-        elif t_count > count:
-            return data_list
-
-    return data_list
+            if t_count == count:
+                # return data_list
+                return data_list
+            elif t_count > count:
+                return data_list
+        return data_list
 
 def consume_bd_win_ticket_prize_message(count:int):
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
-                                  enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
-    consumer.assign([TopicPartition('bd_win_ticket_prize', 0)])
-    t_count = 0
-    data_list = []
-    for message in consumer:
-        consumer.commit()
-        logger.info('bd_win_ticket_prize最初的kafka的数据-----')
-        logger.info(message.value)
-        temp_list = []
-        temp_count = 0
-        m_json = json.loads(message.value.decode('utf-8'))
-        m_json_len = len(m_json)
-        if m_json_len > 1:
-            temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
-            for i in range(m_json_len):
-                temp_list.extend(m_json[i]['data'])
-        else:
-            temp_count += int(len(m_json[0]['data']))
-            temp_list.extend(m_json[0]['data'])
-        # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
-        if all(x in data_list for x in temp_list):
-            #print("temp_list包含在data_list中")
-            pass
-        else:
-            # print("temp_list不包含在data_list中")
-            data_list.extend(temp_list)
-            t_count += temp_count
+    if count == 1:
+        return []
+    else:
+        count = count - 1
+        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+                                      enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
+        consumer.assign([TopicPartition('bd_win_ticket_prize', 0)])
+        t_count = 0
+        data_list = []
+        for message in consumer:
+            consumer.commit()
+            logger.info('bd_win_ticket_prize最初的kafka的数据-----')
+            logger.info(message.value)
+            temp_list = []
+            temp_count = 0
+            m_json = json.loads(message.value.decode('utf-8'))
+            m_json_len = len(m_json)
+            if m_json_len > 1:
+                temp_count = len(m_json[m_json_len - 1]['data']) + (m_json_len - 1) * 100
+                for i in range(m_json_len):
+                    temp_list.extend(m_json[i]['data'])
+            else:
+                temp_count += int(len(m_json[0]['data']))
+                temp_list.extend(m_json[0]['data'])
+            # 然后判断这一轮拿到的数据是否重复，不重复就把它放一起
+            if all(x in data_list for x in temp_list):
+                #print("temp_list包含在data_list中")
+                pass
+            else:
+                # print("temp_list不包含在data_list中")
+                data_list.extend(temp_list)
+                t_count += temp_count
 
-        if t_count == count:
-            # return data_list
-            return data_list
-        elif t_count > count:
-            return data_list
-        # 在这里提交已消费过
-    return data_list
+            if t_count == count:
+                # return data_list
+                return data_list
+            elif t_count > count:
+                return data_list
+            # 在这里提交已消费过
+        return data_list
 
 
 

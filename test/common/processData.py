@@ -27,8 +27,6 @@ def insert_into_ticket_page(current_time):
                         "multiple,bno,eno,transaction_id,term_id) " \
                         "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     res = get_mysql_data.MysqlDb().executemany_db_val(sql_insert_ticket, ticket_page_datalist)
-    logger.info(ticket_page_datalist)
-    logger.info(res)
     logger.info("ticket_page数据准备完毕......")
 
 def insert_into_cancel_ticket(current_time):
@@ -135,7 +133,7 @@ def insert_into_win_ticket_prize(current_time):
 
 def insert_into_win_ticket_prize_page(current_time):
     logger.info("正在准备win_ticket_prize_page数据中......")
-    win_ticket_prize_datalist = getDataFromExcelSheet("win_ticket_prize", current_time)
+    win_ticket_prize_datalist = getDataFromExcelSheet("win_ticket_prize_page", current_time)
     sql_insert_win_ticket_prize = "INSERT INTO win_ticket_prize(draw_id,ticket_no,win_prz_lvl,clerk_id,ticket_amt,eno,prz_cnt," \
                                   "prz_amt,paid_type,paid_time,paid_operator_id,prize_amt,prize_cnt,active_id,prize_tax) " \
                                   "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -265,7 +263,8 @@ def select_from_ticket(begin_time, end_time):
                     FROM 
                         ticket
                     WHERE  
-                        sale_time BETWEEN "{begin_time}" AND "{end_time}";
+                        sale_time BETWEEN "{begin_time}" AND "{end_time}"
+                    ORDER BY draw_id ,ticket_no;
     '''
     # 获取的database的数据
     # select_result的数据：listdict格式 [ {字段名1:值1,字段名2:值2, 字段名3:值3}, {字段名1:值11,字段名2:值22, 字段名3:值33}  ]
@@ -276,7 +275,9 @@ def select_from_ticket(begin_time, end_time):
     selectResultListList = extract_values(selectResultList)
     selectResultListList = sorted(selectResultListList, key=lambda x: [x[1]])
     selectResultListList.insert(0, select_descr)
-    count = int(len(selectResultListList) - 1)
+    count = int(len(selectResultListList))
+    if count==1:
+        return [],0
     return selectResultListList, count
 
 def select_from_cancel_ticket(begin_time, end_time):
@@ -297,25 +298,28 @@ def select_from_cancel_ticket(begin_time, end_time):
                     bno,
                     eno,
                     transaction_id,
-                    td.dict_desc  AS cancel_reason
+                    cancel_reason_id AS cancel_reason
                 FROM 
-                    cancel_ticket ck
-                LEFT JOIN toto_dict td ON td.dict_key = 'cancel_reason' AND td.dict_value = ck.cancel_reason_id
+                    cancel_ticket
                 WHERE 
                     cancel_status = 0 
                 AND 
-                    cancel_time BETWEEN '{begin_time}' AND '{end_time}';
+                    cancel_time BETWEEN '{begin_time}' AND '{end_time}'
+                ORDER BY cancel_id;
     '''
     # 获取的database的数据
     # select_result的数据：listdict格式 [ {字段名1:值1,字段名2:值2, 字段名3:值3}, {字段名1:值11,字段名2:值22, 字段名3:值33}  ]
     # select_descr的数据： [ 字段名1, 字段名2, 字段名3 ]
     select_result, select_descr = get_mysql_data.MysqlDb().select_db_value_desc(select_sql)
+    logger.info(f'select_result----{select_result}')
     # 将select_result的数据内容的值，做了个str()转换，转换之前判断是不是None，若为None，则为''，数据格式没变，还是listdict格式
     selectResultList = select_result_selection_to_str(select_result, select_descr)
     selectResultListList = extract_values(selectResultList)
-    selectResultListList = sorted(selectResultListList, key=lambda x: [x[0]])
+    selectResultListList = sorted(selectResultListList, key=lambda x: [x[2],x[3]])
     selectResultListList.insert(0, select_descr)
-    count = int(len(selectResultListList) - 1)
+    count = int(len(selectResultListList))
+    if count==1:
+        return [],0
     return selectResultListList, count
 
 def select_from_undo_ticket(begin_time, end_time):
@@ -358,7 +362,8 @@ def select_from_undo_ticket(begin_time, end_time):
             WHERE
                 ut.undo_status = 1
             AND
-                undo_time BETWEEN '{begin_time}' AND '{end_time}';
+                undo_time BETWEEN '{begin_time}' AND '{end_time}'
+            ORDER BY undo_id;
     '''
     # 获取的database的数据
     # select_result的数据：listdict格式 [ {字段名1:值1,字段名2:值2, 字段名3:值3}, {字段名1:值11,字段名2:值22, 字段名3:值33}  ]
@@ -367,9 +372,11 @@ def select_from_undo_ticket(begin_time, end_time):
     # 将select_result的数据内容的值，做了个str()转换，转换之前判断是不是None，若为None，则为''，数据格式没变，还是listdict格式
     selectResultList = select_result_selection_to_str(select_result, select_descr)
     selectResultListList = extract_values(selectResultList)
-    selectResultListList = sorted(selectResultListList, key=lambda x: [x[0]])
+    selectResultListList = sorted(selectResultListList, key=lambda x: [x[0],x[1]])
     selectResultListList.insert(0, select_descr)
-    count = int(len(selectResultListList) - 1)
+    count = int(len(selectResultListList))
+    if count==1:
+        return [],0
     return selectResultListList, count
 
 def select_from_win_ticket(begin_time, end_time):
@@ -403,7 +410,8 @@ def select_from_win_ticket(begin_time, end_time):
             FROM 
                 win_ticket
             WHERE 
-                win_time BETWEEN '{begin_time}' AND '{end_time}';
+                win_time BETWEEN '{begin_time}' AND '{end_time}'
+            ORDER BY draw_id, ticket_no, win_prz_lvl;
     '''
     # 获取的database的数据
     # select_result的数据：listdict格式 [ {字段名1:值1,字段名2:值2, 字段名3:值3}, {字段名1:值11,字段名2:值22, 字段名3:值33}  ]
@@ -412,9 +420,11 @@ def select_from_win_ticket(begin_time, end_time):
     # 将select_result的数据内容的值，做了个str()转换，转换之前判断是不是None，若为None，则为''，数据格式没变，还是listdict格式
     selectResultList = select_result_selection_to_str(select_result, select_descr)
     selectResultListList = extract_values(selectResultList)
-    selectResultListList = sorted(selectResultListList, key=lambda x: [x[1]])
+    selectResultListList = sorted(selectResultListList, key=lambda x: [x[0], x[1], x[2]])
     selectResultListList.insert(0, select_descr)
-    count = int(len(selectResultListList) - 1)
+    count = int(len(selectResultListList))
+    if count==1:
+        return [],0
     return selectResultListList, count
 
 def select_from_paid_ticket(begin_time, end_time):
@@ -448,7 +458,8 @@ def select_from_paid_ticket(begin_time, end_time):
             FROM 
                 win_ticket
             WHERE 
-                paid_time BETWEEN '{begin_time}' AND '{end_time}';
+                paid_time BETWEEN '{begin_time}' AND '{end_time}'
+            ORDER BY draw_id, ticket_no, win_prz_lvl;
     '''
     # 获取的database的数据
     # select_result的数据：listdict格式 [ {字段名1:值1,字段名2:值2, 字段名3:值3}, {字段名1:值11,字段名2:值22, 字段名3:值33}  ]
@@ -457,9 +468,11 @@ def select_from_paid_ticket(begin_time, end_time):
     # 将select_result的数据内容的值，做了个str()转换，转换之前判断是不是None，若为None，则为''，数据格式没变，还是listdict格式
     selectResultList = select_result_selection_to_str(select_result, select_descr)
     selectResultListList = extract_values(selectResultList)
-    selectResultListList = sorted(selectResultListList, key=lambda x: [x[0], x[1], x[3]])
+    selectResultListList = sorted(selectResultListList, key=lambda x: [x[0], x[1], x[2]])
     selectResultListList.insert(0, select_descr)
-    count = int(len(selectResultListList) - 1)
+    count = int(len(selectResultListList))
+    if count==1:
+        return [],0
     return selectResultListList, count
 
 def select_from_win_ticket_prize(begin_time, end_time):
@@ -484,6 +497,7 @@ def select_from_win_ticket_prize(begin_time, end_time):
                 win_ticket_prize wtp
             WHERE 
                 paid_time BETWEEN '{begin_time}' AND '{end_time}'
+            ORDER BY draw_id, ticket_no, win_prz_lvl;
     '''
     # 获取的database的数据
     # select_result的数据：listdict格式 [ {字段名1:值1,字段名2:值2, 字段名3:值3}, {字段名1:值11,字段名2:值22, 字段名3:值33}  ]
@@ -494,7 +508,9 @@ def select_from_win_ticket_prize(begin_time, end_time):
     selectResultListList = extract_values(selectResultList)
     selectResultListList = sorted(selectResultListList, key=lambda x: [x[0], x[1], x[2]])
     selectResultListList.insert(0, select_descr)
-    count = int(len(selectResultListList) - 1)
+    count = int(len(selectResultListList))
+    if count==1:
+        return [],0
     return selectResultListList, count
 
 # [{key1:value1,key2:value2,key3:value3},{key1:value11,key2:value22,key3:value33}]
@@ -511,6 +527,8 @@ def extract_values(listdictionary):
     return valuefinal  # 返回存储值的数组
 
 def extract_ticket_values_add_title(listdictionary):
+    if len(listdictionary)==0:
+        return []
     title_list = list(listdictionary[0].keys())
     valuefinal = []
     for dictionary in listdictionary:
@@ -527,6 +545,8 @@ def extract_ticket_values_add_title(listdictionary):
     return valuefinal  # 返回存储值的数组
 
 def extract_cancel_ticket_values_add_title(listdictionary):
+    if len(listdictionary)==0:
+        return []
     title_list = list(listdictionary[0].keys())
     valuefinal = []
     for dictionary in listdictionary:
@@ -538,11 +558,13 @@ def extract_cancel_ticket_values_add_title(listdictionary):
             value = str(dictionary[key])
             values.append(value)
         valuefinal.append(values)
-    valuefinal = sorted(valuefinal, key=lambda x: [x[0]])
+    valuefinal = sorted(valuefinal, key=lambda x: [x[2],x[3]])
     valuefinal.insert(0, title_list)
     return valuefinal  # 返回存储值的数组
 
 def extract_undo_ticket_values_add_title(listdictionary):
+    if len(listdictionary)==0:
+        return []
     title_list = list(listdictionary[0].keys())
     valuefinal = []
     for dictionary in listdictionary:
@@ -554,11 +576,13 @@ def extract_undo_ticket_values_add_title(listdictionary):
             value = str(dictionary[key])
             values.append(value)
         valuefinal.append(values)
-    valuefinal = sorted(valuefinal, key=lambda x: [x[0]])
+    valuefinal = sorted(valuefinal, key=lambda x: [x[0],x[1]])
     valuefinal.insert(0, title_list)
     return valuefinal  # 返回存储值的数组
 
 def extract_win_ticket_values_add_title(listdictionary):
+    if len(listdictionary)==0:
+        return []
     title_list = list(listdictionary[0].keys())
     valuefinal = []
     for dictionary in listdictionary:
@@ -570,11 +594,13 @@ def extract_win_ticket_values_add_title(listdictionary):
             value = str(dictionary[key])
             values.append(value)
         valuefinal.append(values)
-    valuefinal = sorted(valuefinal, key=lambda x: [x[1]])
+    valuefinal = sorted(valuefinal, key=lambda x: [x[0],x[1],x[2]])
     valuefinal.insert(0, title_list)
     return valuefinal  # 返回存储值的数组
 
 def extract_paid_ticket_values_add_title(listdictionary):
+    if len(listdictionary)==0:
+        return []
     title_list = list(listdictionary[0].keys())
     valuefinal = []
     for dictionary in listdictionary:
@@ -586,11 +612,13 @@ def extract_paid_ticket_values_add_title(listdictionary):
             value = str(dictionary[key])
             values.append(value)
         valuefinal.append(values)
-    valuefinal = sorted(valuefinal, key=lambda x: [x[0], x[1], x[3]])
+    valuefinal = sorted(valuefinal, key=lambda x: [x[0], x[1], x[2]])
     valuefinal.insert(0, title_list)
     return valuefinal  # 返回存储值的数组
 
 def extract_win_ticket_prize_values_add_title(listdictionary):
+    if len(listdictionary)==0:
+        return []
     title_list = list(listdictionary[0].keys())
     valuefinal = []
     for dictionary in listdictionary:
@@ -756,7 +784,7 @@ def listlist_to_listtuple(datalist:list, sheetname:str, current_time:str) -> lis
         for dataone in datalist:
             dataone[4] = getAppointDate('undo_ticket_page', dataone[4], current_time)
             dataone[10] = char_to_raw(dataone[10])
-            if dataone[9] == 'NULL':
+            if dataone[14] == 'NULL':
                 dataone[14] = None
             if dataone[17] == 'NULL':
                 dataone[17] = None

@@ -38,9 +38,25 @@
 # #     for i in ret.items:
 # #         print("%s   \t%s \t%s \t%s        \t%s" %
 # #               (i.status.host_ip, i.status.pod_ip, i.status.phase, i.metadata.namespace, i.metadata.name))
+from datetime import datetime, timedelta
 
-my_dict = {'name': 'Alice', 'age': 25, 'city': 'New York'}
+current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-# 获取字典的所有键
-keys = my_dict.keys()
-print(type(list(keys)))
+current_date = datetime.strptime(current_time, '%Y-%m-%d %H:%M:%S')
+print(current_time)
+origdata = "10sec,10min,10min,40min,10sec,600sec"
+
+origdata_list = origdata.split(',')
+data_list = []
+for dataone in origdata_list:
+    if 'sec' in dataone:
+        offset = int(dataone.split('sec')[0])
+        redis_time = current_date - timedelta(seconds=offset)
+        redis_time_str = redis_time.strftime('%Y-%m-%d %H:%M:%S')
+        data_list.append(redis_time_str)
+    elif 'min' in dataone:
+        offset = int(dataone.split('min')[0])
+        redis_time = current_date - timedelta(minutes=offset)
+        redis_time_str = redis_time.strftime('%Y-%m-%d %H:%M:%S')
+        data_list.append(redis_time_str)
+print(data_list)
