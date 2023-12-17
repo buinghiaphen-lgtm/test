@@ -78,6 +78,13 @@ def realtime_kafka_fixture(request):
         proData.insert_into_win_ticket(current_time)
         proData.insert_into_paid_ticket(current_time)
         proData.insert_into_win_ticket_prize(current_time)
+        # 清除KAFKA的消息
+        clear_ticket_message()
+        clear_cancel_ticket_message()
+        clear_undo_ticket_message()
+        clear_win_ticket_message()
+        clear_paid_ticket_message()
+        clear_win_ticket_prize_message()
         # 修改六个key的redis，redis_time是最后推送时间
         REDIS().hset_key_value('Ticket', redis_time)
         REDIS().hset_key_value('cancel_ticket', redis_time)
@@ -186,23 +193,23 @@ def realtime_kafka_fixture(request):
         REDIS().hset_key_value('Win_ticket_prize', redis_time_list[5])
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
-    yield
-    if '分页推送' in data[0]:
-        # 删除数据
-        proData.delete_from_ticket_page()
-        proData.delete_from_cancel_ticket_page()
-        proData.delete_from_undo_ticket_page()
-        proData.delete_from_win_ticket_page()
-        proData.delete_from_paid_ticket_page()
-        proData.delete_from_win_ticket_prize_page()
-    else:
-        # 删除数据
-        proData.delete_from_ticket()
-        proData.delete_from_cancel_ticket()
-        proData.delete_from_undo_ticket()
-        proData.delete_from_win_ticket()
-        proData.delete_from_paid_ticket()
-        proData.delete_from_win_ticket_prize()
+    # yield
+    # if '分页推送' in data[0]:
+    #     # 删除数据
+    #     proData.delete_from_ticket_page()
+    #     proData.delete_from_cancel_ticket_page()
+    #     proData.delete_from_undo_ticket_page()
+    #     proData.delete_from_win_ticket_page()
+    #     proData.delete_from_paid_ticket_page()
+    #     proData.delete_from_win_ticket_prize_page()
+    # else:
+    #     # 删除数据
+    #     proData.delete_from_ticket()
+    #     proData.delete_from_cancel_ticket()
+    #     proData.delete_from_undo_ticket()
+    #     proData.delete_from_win_ticket()
+    #     proData.delete_from_paid_ticket()
+    #     proData.delete_from_win_ticket_prize()
 
 
 class TestKafka:
@@ -508,7 +515,10 @@ class TestKafka:
                 start_time = datetime.strptime(redis_init_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
+
                 redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                logger.info(f'11redis_time{redis_time}')
+                logger.info(f'11redis_init_time{redis_init_time}')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
                     redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')

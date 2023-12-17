@@ -12,7 +12,7 @@ def insert_into_ticket(current_time):
     # ticket_draw_id_list = getPartionList("ticket", "alter")
     sql_alter_partion_ticket = "alter table ticket add partition (partition p%s values in (%s));"
     res1 = get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_ticket, partion_list)
-    sql_insert_ticket = 'INSERT INTO ticket(ticket_id,draw_id,ticket_no,clerk_id,ticket_pwd,sale_time,chances,selection,multiple,bno,eno,transaction_id,term_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);'
+    sql_insert_ticket = 'REPLACE ticket(ticket_id,draw_id,ticket_no,clerk_id,ticket_pwd,sale_time,chances,selection,multiple,bno,eno,transaction_id,term_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);'
     res = get_mysql_data.MysqlDb().executemany_db_val(sql_insert_ticket, ticket_datalist)
     logger.info("ticket数据准备完毕......")
 
@@ -23,7 +23,7 @@ def insert_into_ticket_page(current_time):
     # ticket_draw_id_list = getPartionList("ticket", "alter")
     sql_alter_partion_ticket = "alter table ticket add partition (partition p%s values in (%s));"
     get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_ticket, partion_list)
-    sql_insert_ticket = "INSERT INTO ticket(ticket_id,draw_id,ticket_no,clerk_id,ticket_pwd,sale_time,chances,selection," \
+    sql_insert_ticket = "REPLACE INTO ticket(ticket_id,draw_id,ticket_no,clerk_id,ticket_pwd,sale_time,chances,selection," \
                         "multiple,bno,eno,transaction_id,term_id) " \
                         "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     res = get_mysql_data.MysqlDb().executemany_db_val(sql_insert_ticket, ticket_page_datalist)
@@ -32,7 +32,7 @@ def insert_into_ticket_page(current_time):
 def insert_into_cancel_ticket(current_time):
     logger.info("正在准备cancel_ticket数据中......")
     cancel_ticket_datalist = getDataFromExcelSheet("cancel_ticket", current_time)
-    sql_insert_cancel_ticket = "INSERT INTO cancel_ticket(cancel_id,ticket_id,draw_id,ticket_no,clerk_id," \
+    sql_insert_cancel_ticket = "REPLACE INTO cancel_ticket(cancel_id,ticket_id,draw_id,ticket_no,clerk_id," \
                                "ticket_pwd,sale_time,chances,selection,multiple,cancel_type,cancel_status,cancel_time," \
                                "cancel_operator_id,bno,eno,transaction_id,cancel_reason_id) " \
                                "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -42,7 +42,7 @@ def insert_into_cancel_ticket(current_time):
 def insert_into_cancel_ticket_page(current_time):
     logger.info("正在准备cancel_ticket_page数据中......")
     cancel_ticket_datalist = getDataFromExcelSheet("cancel_ticket_page", current_time)
-    sql_insert_cancel_ticket = "INSERT INTO cancel_ticket(cancel_id,ticket_id,draw_id,ticket_no,clerk_id," \
+    sql_insert_cancel_ticket = "REPLACE INTO cancel_ticket(cancel_id,ticket_id,draw_id,ticket_no,clerk_id," \
                                "ticket_pwd,sale_time,chances,selection,multiple,cancel_type,cancel_status,cancel_time," \
                                "cancel_operator_id,bno,eno,transaction_id,cancel_reason) " \
                                "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -52,7 +52,7 @@ def insert_into_cancel_ticket_page(current_time):
 def insert_into_undo_ticket(current_time):
     logger.info("正在准备undo_ticket数据中......")
     undo_ticket_datalist = getDataFromExcelSheet("undo_ticket", current_time)
-    sql_insert_undo_ticket = "INSERT INTO undo_ticket(undo_id,draw_id,ticket_no,ticket_id,undo_time,term_id,clerk_id," \
+    sql_insert_undo_ticket = "REPLACE INTO undo_ticket(undo_id,draw_id,ticket_no,ticket_id,undo_time,term_id,clerk_id," \
                              "ticket_pwd,sale_time,chances,selection,multiple,undo_reason_id,undo_reason,undo_fail_reason_id," \
                              "bno,eno,transaction_id,undo_status) " \
                              "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -62,7 +62,7 @@ def insert_into_undo_ticket(current_time):
 def insert_into_undo_ticket_page(current_time):
     logger.info("正在准备undo_ticket_page数据中......")
     undo_ticket_datalist = getDataFromExcelSheet("undo_ticket_page", current_time)
-    sql_insert_undo_ticket = "INSERT INTO undo_ticket(undo_id,draw_id,ticket_no,ticket_id,undo_time,term_id,clerk_id," \
+    sql_insert_undo_ticket = "REPLACE INTO undo_ticket(undo_id,draw_id,ticket_no,ticket_id,undo_time,term_id,clerk_id," \
                              "ticket_pwd,sale_time,chances,selection,multiple,undo_reason_id,undo_reason,undo_fail_reason_id," \
                              "bno,eno,transaction_id,undo_status) " \
                              "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -75,7 +75,7 @@ def insert_into_win_ticket(current_time):
     partion_list = getPartionList("win_ticket", "alter")
     sql_alter_partion_win_ticket = "alter table win_ticket add partition (partition p%s values in (%s));"
     get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_win_ticket, partion_list)
-    sql_insert_win_ticket = "INSERT INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
+    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
                             "win_time, paid_time, chances, selection, multiple, prz_cnt, prz_amt, tax_amt, paid_type, " \
                             "paid_operator_id, withdraw_amt, bno, eno, transaction_id, payment_type) " \
                             "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -88,7 +88,7 @@ def insert_into_win_ticket_page(current_time):
     partion_list = getPartionList("win_ticket_page", "alter")
     sql_alter_partion_win_ticket = "alter table win_ticket add partition (partition p%s values in (%s));"
     get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_win_ticket, partion_list)
-    sql_insert_win_ticket = "INSERT INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
+    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
                             "win_time, paid_time, chances, selection, multiple, prz_cnt, prz_amt, tax_amt, paid_type, " \
                             "paid_operator_id, withdraw_amt, bno, eno, transaction_id, payment_type) " \
                             "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -101,7 +101,7 @@ def insert_into_paid_ticket(current_time):
     partion_list = getPartionList("paid_ticket", "alter")
     sql_alter_partion_win_ticket = "alter table win_ticket add partition (partition p%s values in (%s));"
     get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_win_ticket, partion_list)
-    sql_insert_win_ticket = "INSERT INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
+    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
                             "win_time, paid_time, chances, selection, multiple, prz_cnt, prz_amt, tax_amt, paid_type, " \
                             "paid_operator_id, withdraw_amt, bno, eno, transaction_id, payment_type) " \
                             "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -114,7 +114,7 @@ def insert_into_paid_ticket_page(current_time):
     partion_list = getPartionList("paid_ticket_page", "alter")
     sql_alter_partion_win_ticket = "alter table win_ticket add partition (partition p%s values in (%s));"
     get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_win_ticket, partion_list)
-    sql_insert_win_ticket = "INSERT INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
+    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
                             "win_time, paid_time, chances, selection, multiple, prz_cnt, prz_amt, tax_amt, paid_type, " \
                             "paid_operator_id, withdraw_amt, bno, eno, transaction_id, payment_type) " \
                             "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -124,7 +124,7 @@ def insert_into_paid_ticket_page(current_time):
 def insert_into_win_ticket_prize(current_time):
     logger.info("正在准备win_ticket_prize数据中......")
     win_ticket_prize_datalist = getDataFromExcelSheet("win_ticket_prize", current_time)
-    sql_insert_win_ticket_prize = "INSERT INTO win_ticket_prize(draw_id,ticket_no,win_prz_lvl,clerk_id,ticket_amt,eno,prz_cnt," \
+    sql_insert_win_ticket_prize = "REPLACE INTO win_ticket_prize(draw_id,ticket_no,win_prz_lvl,clerk_id,ticket_amt,eno,prz_cnt," \
                                   "prz_amt,paid_type,paid_time,paid_operator_id,prize_amt,prize_cnt,active_id,prize_tax) " \
                                   "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(
@@ -134,7 +134,7 @@ def insert_into_win_ticket_prize(current_time):
 def insert_into_win_ticket_prize_page(current_time):
     logger.info("正在准备win_ticket_prize_page数据中......")
     win_ticket_prize_datalist = getDataFromExcelSheet("win_ticket_prize_page", current_time)
-    sql_insert_win_ticket_prize = "INSERT INTO win_ticket_prize(draw_id,ticket_no,win_prz_lvl,clerk_id,ticket_amt,eno,prz_cnt," \
+    sql_insert_win_ticket_prize = "REPLACE INTO win_ticket_prize(draw_id,ticket_no,win_prz_lvl,clerk_id,ticket_amt,eno,prz_cnt," \
                                   "prz_amt,paid_type,paid_time,paid_operator_id,prize_amt,prize_cnt,active_id,prize_tax) " \
                                   "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(
