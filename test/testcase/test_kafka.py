@@ -193,7 +193,8 @@ def realtime_kafka_fixture(request):
         REDIS().hset_key_value('Win_ticket_prize', redis_time_list[5])
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
-    # yield
+    yield
+    proData.delete_from_table()
     # if '分页推送' in data[0]:
     #     # 删除数据
     #     proData.delete_from_ticket_page()
@@ -273,7 +274,7 @@ class TestKafka:
     @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 9, 9), indirect=True)
     def test_circle(self, realtime_kafka_fixture):
         # 测试用例7：循环推送
-        for i in range(2):
+        for i in range(3):
             logger.info(f'第{i+1}次推送......')
             asyncio.run(self.bd_data(7,i))
 

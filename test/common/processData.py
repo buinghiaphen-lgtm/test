@@ -1,5 +1,5 @@
 from common.logger import logger
-from common.tools import Excel
+from common.tools import Excel,DB
 from datetime import datetime,timedelta
 from setting import TEST_DATA_PATH
 from common import get_mysql_data
@@ -8,116 +8,114 @@ from common import get_mysql_data
 def insert_into_ticket(current_time):
     logger.info("正在准备ticket数据中......")
     ticket_datalist = getDataFromExcelSheet("ticket", current_time)
-    partion_list = getPartionList("ticket", "alter")
-    # ticket_draw_id_list = getPartionList("ticket", "alter")
-    sql_alter_partion_ticket = "alter table ticket add partition (partition p%s values in (%s));"
-    res1 = get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_ticket, partion_list)
-    sql_insert_ticket = 'REPLACE ticket(ticket_id,draw_id,ticket_no,clerk_id,ticket_pwd,sale_time,chances,selection,multiple,bno,eno,transaction_id,term_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);'
-    res = get_mysql_data.MysqlDb().executemany_db_val(sql_insert_ticket, ticket_datalist)
+    partion_list = getPartionList("ticket")
+    with DB() as db:
+        db.add_partition('ticket', partion_list)
+    sql_insert_ticket = 'REPLACE ticket(draw_id,ticket_no,clerk_id,ticket_pwd,sale_time,chances,selection,multiple,bno,eno,transaction_id,term_id) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);'
+    get_mysql_data.MysqlDb().executemany_db_val(sql_insert_ticket, ticket_datalist)
     logger.info("ticket数据准备完毕......")
 
 def insert_into_ticket_page(current_time):
     logger.info("正在准备ticket_page数据中......")
     ticket_page_datalist = getDataFromExcelSheet("ticket_page", current_time)
-    partion_list = getPartionList("ticket_page", "alter")
-    # ticket_draw_id_list = getPartionList("ticket", "alter")
-    sql_alter_partion_ticket = "alter table ticket add partition (partition p%s values in (%s));"
-    get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_ticket, partion_list)
-    sql_insert_ticket = "REPLACE INTO ticket(ticket_id,draw_id,ticket_no,clerk_id,ticket_pwd,sale_time,chances,selection," \
+    partion_list = getPartionList("ticket_page")
+    with DB() as db:
+        db.add_partition('ticket', partion_list)
+    sql_insert_ticket = "REPLACE INTO ticket(draw_id,ticket_no,clerk_id,ticket_pwd,sale_time,chances,selection," \
                         "multiple,bno,eno,transaction_id,term_id) " \
-                        "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-    res = get_mysql_data.MysqlDb().executemany_db_val(sql_insert_ticket, ticket_page_datalist)
+                        "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    get_mysql_data.MysqlDb().executemany_db_val(sql_insert_ticket, ticket_page_datalist)
     logger.info("ticket_page数据准备完毕......")
 
 def insert_into_cancel_ticket(current_time):
     logger.info("正在准备cancel_ticket数据中......")
     cancel_ticket_datalist = getDataFromExcelSheet("cancel_ticket", current_time)
-    sql_insert_cancel_ticket = "REPLACE INTO cancel_ticket(cancel_id,ticket_id,draw_id,ticket_no,clerk_id," \
+    sql_insert_cancel_ticket = "REPLACE INTO cancel_ticket(draw_id,ticket_no,clerk_id," \
                                "ticket_pwd,sale_time,chances,selection,multiple,cancel_type,cancel_status,cancel_time," \
                                "cancel_operator_id,bno,eno,transaction_id,cancel_reason_id) " \
-                               "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                               "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(sql_insert_cancel_ticket, cancel_ticket_datalist)
     logger.info("cancel_ticket数据准备完毕......")
 
 def insert_into_cancel_ticket_page(current_time):
     logger.info("正在准备cancel_ticket_page数据中......")
     cancel_ticket_datalist = getDataFromExcelSheet("cancel_ticket_page", current_time)
-    sql_insert_cancel_ticket = "REPLACE INTO cancel_ticket(cancel_id,ticket_id,draw_id,ticket_no,clerk_id," \
+    sql_insert_cancel_ticket = "REPLACE INTO cancel_ticket(draw_id,ticket_no,clerk_id," \
                                "ticket_pwd,sale_time,chances,selection,multiple,cancel_type,cancel_status,cancel_time," \
-                               "cancel_operator_id,bno,eno,transaction_id,cancel_reason) " \
-                               "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                               "cancel_operator_id,bno,eno,transaction_id,cancel_reason_id) " \
+                               "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(sql_insert_cancel_ticket, cancel_ticket_datalist)
     logger.info("cancel_ticket_page数据准备完毕......")
 
 def insert_into_undo_ticket(current_time):
     logger.info("正在准备undo_ticket数据中......")
     undo_ticket_datalist = getDataFromExcelSheet("undo_ticket", current_time)
-    sql_insert_undo_ticket = "REPLACE INTO undo_ticket(undo_id,draw_id,ticket_no,ticket_id,undo_time,term_id,clerk_id," \
+    sql_insert_undo_ticket = "REPLACE INTO undo_ticket(draw_id,ticket_no,undo_time,term_id,clerk_id," \
                              "ticket_pwd,sale_time,chances,selection,multiple,undo_reason_id,undo_reason,undo_fail_reason_id," \
                              "bno,eno,transaction_id,undo_status) " \
-                             "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                             "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(sql_insert_undo_ticket, undo_ticket_datalist)
     logger.info("undo_ticket数据准备完毕......")
 
 def insert_into_undo_ticket_page(current_time):
     logger.info("正在准备undo_ticket_page数据中......")
     undo_ticket_datalist = getDataFromExcelSheet("undo_ticket_page", current_time)
-    sql_insert_undo_ticket = "REPLACE INTO undo_ticket(undo_id,draw_id,ticket_no,ticket_id,undo_time,term_id,clerk_id," \
+    sql_insert_undo_ticket = "REPLACE INTO undo_ticket(draw_id,ticket_no,undo_time,term_id,clerk_id," \
                              "ticket_pwd,sale_time,chances,selection,multiple,undo_reason_id,undo_reason,undo_fail_reason_id," \
                              "bno,eno,transaction_id,undo_status) " \
-                             "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                             "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(sql_insert_undo_ticket, undo_ticket_datalist)
     logger.info("undo_ticket_page数据准备完毕......")
 
 def insert_into_win_ticket(current_time):
     logger.info("正在准备win_ticket数据中......")
     win_ticket_datalist = getDataFromExcelSheet("win_ticket", current_time)
-    partion_list = getPartionList("win_ticket", "alter")
-    sql_alter_partion_win_ticket = "alter table win_ticket add partition (partition p%s values in (%s));"
-    get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_win_ticket, partion_list)
-    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
+    partion_list = getPartionList("win_ticket")
+    with DB() as db:
+        db.add_partition('win_ticket', partion_list)
+    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
                             "win_time, paid_time, chances, selection, multiple, prz_cnt, prz_amt, tax_amt, paid_type, " \
                             "paid_operator_id, withdraw_amt, bno, eno, transaction_id, payment_type) " \
-                            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(sql_insert_win_ticket, win_ticket_datalist)
     logger.info("win_ticket数据准备完毕......")
 
 def insert_into_win_ticket_page(current_time):
     logger.info("正在准备win_ticket_page数据中......")
     win_ticket_datalist = getDataFromExcelSheet("win_ticket_page", current_time)
-    partion_list = getPartionList("win_ticket_page", "alter")
-    sql_alter_partion_win_ticket = "alter table win_ticket add partition (partition p%s values in (%s));"
-    get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_win_ticket, partion_list)
-    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
+    partion_list = getPartionList("win_ticket_page")
+    with DB() as db:
+        db.add_partition('win_ticket', partion_list)
+    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
                             "win_time, paid_time, chances, selection, multiple, prz_cnt, prz_amt, tax_amt, paid_type, " \
                             "paid_operator_id, withdraw_amt, bno, eno, transaction_id, payment_type) " \
-                            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(sql_insert_win_ticket, win_ticket_datalist)
     logger.info("win_ticket_page数据准备完毕......")
 
 def insert_into_paid_ticket(current_time):
     logger.info("正在准备paid_ticket数据中......")
     win_ticket_datalist = getDataFromExcelSheet("paid_ticket", current_time)
-    partion_list = getPartionList("paid_ticket", "alter")
-    sql_alter_partion_win_ticket = "alter table win_ticket add partition (partition p%s values in (%s));"
-    get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_win_ticket, partion_list)
-    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
+    partion_list = getPartionList("paid_ticket")
+    with DB() as db:
+        db.add_partition('win_ticket', partion_list)
+    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
                             "win_time, paid_time, chances, selection, multiple, prz_cnt, prz_amt, tax_amt, paid_type, " \
                             "paid_operator_id, withdraw_amt, bno, eno, transaction_id, payment_type) " \
-                            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(sql_insert_win_ticket, win_ticket_datalist)
     logger.info("paid_ticket数据准备完毕......")
 
 def insert_into_paid_ticket_page(current_time):
     logger.info("正在准备paid_ticket数据中......")
     win_ticket_datalist = getDataFromExcelSheet("paid_ticket_page", current_time)
-    partion_list = getPartionList("paid_ticket_page", "alter")
-    sql_alter_partion_win_ticket = "alter table win_ticket add partition (partition p%s values in (%s));"
-    get_mysql_data.MysqlDb().executemany_db_val(sql_alter_partion_win_ticket, partion_list)
-    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, ticket_id, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
+    partion_list = getPartionList("paid_ticket_page")
+    with DB() as db:
+        db.add_partition('win_ticket', partion_list)
+    sql_insert_win_ticket = "REPLACE INTO win_ticket(draw_id, ticket_no, win_prz_lvl, clerk_id, ticket_pwd, sale_time, " \
                             "win_time, paid_time, chances, selection, multiple, prz_cnt, prz_amt, tax_amt, paid_type, " \
                             "paid_operator_id, withdraw_amt, bno, eno, transaction_id, payment_type) " \
-                            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                            "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     get_mysql_data.MysqlDb().executemany_db_val(sql_insert_win_ticket, win_ticket_datalist)
     logger.info("paid_ticket_page数据准备完毕......")
 
@@ -151,6 +149,26 @@ def delete_from_ticket():
     partion_ticket = getPartionList("ticket", "delete")
     get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_ticket, partion_ticket)
     logger.info("ticket测试数据删除完毕......")
+
+def delete_from_table():
+    logger.info('开始删除测试数据')
+    ticket_sql = 'DELETE FROM ticket WHERE ticket_no LIKE "9999999999%";'
+    cancel_ticket_sql = 'DELETE FROM cancel_ticket WHERE ticket_no LIKE "9999999999%";'
+    undo_ticket_sql = 'DELETE FROM undo_ticket WHERE ticket_no LIKE "9999999999%";'
+    win_ticket_sql = 'DELETE FROM win_ticket WHERE ticket_no LIKE "9999999999%";'
+    win_ticket_prize_sql = 'DELETE FROM win_ticket_prize WHERE ticket_no LIKE "9999999999%";'
+    with DB() as db:
+        logger.info('正在删除ticket数据')
+        db.execute(ticket_sql)
+        logger.info('正在删除cancel_ticket数据')
+        db.execute(cancel_ticket_sql)
+        logger.info('正在删除undo_ticket数据')
+        db.execute(undo_ticket_sql)
+        logger.info('正在删除win_ticket数据')
+        db.execute(win_ticket_sql)
+        logger.info('正在删除win_ticket_prize数据')
+        db.execute(win_ticket_prize_sql)
+    logger.info('测试数据删除完毕')
 
 def delete_from_ticket_page():
     logger.info("正在删除ticket_page测试数据中......")
@@ -679,38 +697,21 @@ def getAppointDate(tablename, origdata, current_time):
             offset_time_str = offset_time.strftime('%Y-%m-%d %H:%M:%S')
             return offset_time_str
 
-def getPartionList(sheetname:str,handelflag:str) -> list:
+def getPartionList(sheetname:str) -> list:
     listlist = Excel(TEST_DATA_PATH).get_aslist(sheetname, 1, 3)
-    twoargslist = []
     withpartionlist = []
     if sheetname == "ticket" or sheetname == "ticket_page":
-        if handelflag == 'alter':
-            for dataone in listlist:
-                temptuple = (int(dataone[1]),int(dataone[1]))
-                twoargslist.append(temptuple)
-                twoargslist = set(twoargslist)
-                twoargslist = list(twoargslist)
-            return twoargslist
-        elif handelflag == 'delete':
-            for dataone in listlist:
-                withpartionlist.append(int(dataone[1]))
-                withpartionlist = set(withpartionlist)
-                withpartionlist = list(withpartionlist)
-            return withpartionlist
+        for dataone in listlist:
+            withpartionlist.append(int(dataone[0]))
+            withpartionlist = set(withpartionlist)
+            withpartionlist = list(withpartionlist)
+        return withpartionlist
     elif sheetname == "win_ticket" or sheetname == "win_ticket_page" or sheetname == "paid_ticket" or sheetname == "paid_ticket_page":
-        if handelflag == 'alter':
-            for dataone in listlist:
-                temptuple = (int(dataone[0]), int(dataone[0]))
-                twoargslist.append(temptuple)
-                twoargslist = set(twoargslist)
-                twoargslist = list(twoargslist)
-            return twoargslist
-        elif handelflag == 'delete':
-            for dataone in listlist:
-                withpartionlist.append(int(dataone[0]))
-                withpartionlist = set(withpartionlist)
-                withpartionlist = list(withpartionlist)
-            return withpartionlist
+        for dataone in listlist:
+            withpartionlist.append(int(dataone[0]))
+            withpartionlist = set(withpartionlist)
+            withpartionlist = list(withpartionlist)
+        return withpartionlist
 
 def getDataDeleteList(sheetname):
     listlist = Excel(TEST_DATA_PATH).get_aslist(sheetname,1,3)
@@ -743,86 +744,84 @@ def listlist_to_listtuple(datalist:list, sheetname:str, current_time:str) -> lis
     datalisttuple = []
     if sheetname == 'ticket':
         for dataone in datalist:
-            dataone[5] = getAppointDate('ticket', dataone[5], current_time)
-            dataone[7] = char_to_raw(dataone[7])
+            dataone[4] = getAppointDate('ticket', dataone[4], current_time)
+            dataone[6] = char_to_raw(dataone[6])
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'ticket_page':
         for dataone in datalist:
-            dataone[5] = getAppointDate('ticket_page', dataone[5], current_time)
-            dataone[7] = char_to_raw(dataone[7])
+            dataone[4] = getAppointDate('ticket_page', dataone[4], current_time)
+            dataone[6] = char_to_raw(dataone[6])
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'cancel_ticket':
         for dataone in datalist:
-            dataone[8] = char_to_raw(dataone[8])
-            dataone[12] = getAppointDate('cancel_ticket', dataone[12], current_time)
+            dataone[6] = char_to_raw(dataone[6])
+            dataone[10] = getAppointDate('cancel_ticket', dataone[10], current_time)
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'cancel_ticket_page':
         for dataone in datalist:
-            dataone[8] = char_to_raw(dataone[8])
-            dataone[12] = getAppointDate('cancel_ticket_page', dataone[12], current_time)
+            dataone[6] = char_to_raw(dataone[6])
+            dataone[10] = getAppointDate('cancel_ticket_page', dataone[10], current_time)
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'undo_ticket':
         for dataone in datalist:
-            dataone[4] = getAppointDate('undo_ticket', dataone[4], current_time)
-            dataone[10] = char_to_raw(dataone[10])
-            if dataone[14] == 'NULL':
-                dataone[14] = None
-            if dataone[17] == 'NULL':
-                dataone[17] = None
+            dataone[2] = getAppointDate('undo_ticket', dataone[2], current_time)
+            dataone[8] = char_to_raw(dataone[8])
+            if dataone[12] == 'NULL':
+                dataone[12] = None
+            if dataone[15] == 'NULL':
+                dataone[15] = None
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'undo_ticket_page':
         for dataone in datalist:
-            dataone[4] = getAppointDate('undo_ticket_page', dataone[4], current_time)
-            dataone[10] = char_to_raw(dataone[10])
-            if dataone[14] == 'NULL':
-                dataone[14] = None
-            if dataone[17] == 'NULL':
-                dataone[17] = None
+            dataone[2] = getAppointDate('undo_ticket_page', dataone[2], current_time)
+            dataone[8] = char_to_raw(dataone[8])
+            if dataone[12] == 'NULL':
+                dataone[12] = None
+            if dataone[15] == 'NULL':
+                dataone[15] = None
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'win_ticket':
         for dataone in datalist:
-            dataone[7] = getAppointDate('win_ticket', dataone[7], current_time)
-            dataone[10] = char_to_raw(dataone[10])
+            dataone[6] = getAppointDate('win_ticket', dataone[6], current_time)
+            dataone[9] = char_to_raw(dataone[9])
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'win_ticket_page':
         for dataone in datalist:
-            dataone[7] = getAppointDate('win_ticket_page', dataone[7], current_time)
-            dataone[10] = char_to_raw(dataone[10])
+            dataone[6] = getAppointDate('win_ticket_page', dataone[6], current_time)
+            dataone[9] = char_to_raw(dataone[9])
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'paid_ticket':
         for dataone in datalist:
-            dataone[8] = getAppointDate('paid_ticket', dataone[8], current_time)
-            dataone[10] = char_to_raw(dataone[10])
+            dataone[7] = getAppointDate('paid_ticket', dataone[7], current_time)
+            dataone[9] = char_to_raw(dataone[9])
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'paid_ticket_page':
         for dataone in datalist:
-            dataone[8] = getAppointDate('paid_ticket_page', dataone[8], current_time)
-            dataone[10] = char_to_raw(dataone[10])
+            dataone[7] = getAppointDate('paid_ticket_page', dataone[7], current_time)
+            dataone[9] = char_to_raw(dataone[9])
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
     elif sheetname == 'win_ticket_prize':
         for dataone in datalist:
-            if dataone[8] == 'NULL':
-                dataone[8] = None
             dataone[9] = getAppointDate('win_ticket_prize', dataone[9], current_time)
             if dataone[10] == 'NULL':
                 dataone[10] = None
@@ -831,8 +830,6 @@ def listlist_to_listtuple(datalist:list, sheetname:str, current_time:str) -> lis
         return datalisttuple
     elif sheetname == 'win_ticket_prize_page':
         for dataone in datalist:
-            if dataone[8] == 'NULL':
-                dataone[8] = None
             dataone[9] = getAppointDate('win_ticket_prize_page', dataone[9], current_time)
             if dataone[10] == 'NULL':
                 dataone[10] = None
