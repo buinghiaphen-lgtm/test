@@ -8,7 +8,7 @@ TEST_DATA_PATH = Path(BASE_DIR, 'data', '测试数据-实时推送-kafka工具.x
 
 # REDIS相关配置
 REDIS_HOST = os.getenv('REDIS_HOST') or '192.168.24.213'
-REDIS_PORT = os.getenv('REDIS_PORT') or 32385
+REDIS_PORT = os.getenv('REDIS_PORT') or 59229
 REDIS_DB = os.getenv('REDIS_DB') or 0
 REDIS_HNAME = os.getenv('REDIS_HNAME') or 'kafkaLastTime'
 
