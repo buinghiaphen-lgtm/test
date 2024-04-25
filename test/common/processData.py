@@ -409,7 +409,7 @@ def select_from_win_ticket(begin_time, end_time):
                 chances,
                 selection,
                 multiple,
-                prz_cnt,
+                CAST(prz_cnt AS CHAR)AS prz_cnt,
                 prz_amt,
                 tax_amt,
                 paid_type,
