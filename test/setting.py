@@ -18,7 +18,7 @@ KAFKA_TNAME = []
 KAFKA_SERVER = os.getenv('KAFKA_SERVER') or 'my-cluster-kafka-bootstrap.ns-national:9092'
 
 # 数据库连接地址
-DB_HOST = os.getenv('DB_HOST') or '192.168.24.210'
+DB_HOST = os.getenv('DB_HOST') or '192.168.24.200'
 DB_PORT = os.getenv('DB_PORT') or 3390
 DB_USER = os.getenv('DB_USER') or 'v2t'
 DB_PASSWORD = os.getenv('DB_PASSWORD') or 'Vegas2.0'
