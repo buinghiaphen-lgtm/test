@@ -13,30 +13,6 @@ API_SERVER_IP = '192.168.24.191'
 DEFAULT_REQUEST_TIMEOUT = 30
 _orig_create_connection = connection.create_connection
 
-def restart_deployment(kubeconfig_path, namespace, deployment_name):
-    # 指定配置文件路径
-    config.load_kube_config(config_file=kubeconfig_path)
-    # 创建 Kubernetes API 客户端
-    v1 = client.AppsV1Api()
-    # v1.patch_namespaced_deployment(deployment_name, namespace, body={'spec': {'replicas': 0}})
-    # time.sleep(3)
-    v1.patch_namespaced_deployment(deployment_name, namespace, body={'spec': {'replicas': 1}})
-    time.sleep(5)
-    # 指定要重启的Deployment的名称和命名空间
-    # namespace = "default" # 或者是你的deployment所在的其他命名空间
-
-def stop_deployment(kubeconfig_path, namespace, deployment_name):
-    # 指定配置文件路径
-    config.load_kube_config(config_file=kubeconfig_path)
-    # 创建 Kubernetes API 客户端
-    v1 = client.AppsV1Api()
-    v1.patch_namespaced_deployment(deployment_name, namespace, body={'spec': {'replicas': 0}})
-    time.sleep(5)
-    # 指定要重启的Deployment的名称和命名空间
-    # namespace = "default" # 或者是你的deployment所在的其他命名空间
-
-
-
 def patched_create_connection(address, *args, **kwargs):
     hostname, port = address
     host = API_SERVER_IP if hostname == 'lb.kubesphere.local' else hostname
@@ -78,7 +54,6 @@ def modify_configmap_by_key(namespace, cmname, key, value):
     :param cmname: 配置字典value
     """
     v1 = client.CoreV1Api()
-    # 4 ways: https://kubernetes.io/docs/reference/using-api/api-concepts/#patch-and-apply
     body = {'data': {key: value}}
     # body = [{'op': 'replace', 'path': '/data', 'value': {key: content}}]
     v1.patch_namespaced_config_map(cmname, namespace, body, _request_timeout=DEFAULT_REQUEST_TIMEOUT)
@@ -93,17 +68,18 @@ def wait_job_completed(namespace, jobname, resource_version, request_timeout):
     :param jobname: 任务名称
     :param resource_version: 资源版本
     :param request_timeout: 等待任务完成的超时时间
-    :return: completed 任务完成, failed 任务失败, unknown 任务状态未知或超时,
+    :return: str
+             completed 任务完成, failed 任务失败, unknown 任务状态未知或超时
     """
     log.info("waiting for job %s/%s to complete", namespace, jobname)
     v1 = client.BatchV1Api()
-    max_retry = 30
+    max_retry = 300
     for _ in range(max_retry):
         try:
             jobstatus = 'unknown'
             count = 10
             w = watch.Watch()
-            # only watch list api: https://github.com/kubernetes-client/python/issues/1793
+            log.info('watch job/%s resource_version = %s', jobname, resource_version)
             for event in w.stream(v1.list_namespaced_job,
                                   namespace=namespace,
                                 #   label_selector=','.join(k + '=' + v for k, v in labels.items()),
@@ -113,13 +89,12 @@ def wait_job_completed(namespace, jobname, resource_version, request_timeout):
                                   _request_timeout=request_timeout):
                 s = event['object'].status
 
-                # ref: https://github.com/kubernetes/dashboard/blob/master/modules/api/pkg/resource/job/list.go#L178
                 if s.conditions:
                     w.stop()
                     if any(x.status == 'True' and x.type == 'Complete' for x in s.conditions):
                         jobstatus = 'completed'
                     else:
-                        log.error('%s', jobstatus.conditions)
+                        log.error('%s', s.conditions)
                         jobstatus = 'failed'
 
                 count -= 1
@@ -128,14 +103,18 @@ def wait_job_completed(namespace, jobname, resource_version, request_timeout):
 
             log.info('job %s/%s is %s', namespace, jobname, jobstatus)
             return jobstatus
+        except ApiException as ex:
+            if ex.status == watch.watch.HTTP_STATUS_GONE:
+                log.warning('Got `410 Gone`, retry again. ApiException Exception: %s', repr(ex))
+                resource_version = None
+                break
+            raise
         except HTTPError as ex:
-            log.warning(ex)
-            log.info("retry again")
+            log.warning('An error occurred in the request, retry again. HTTPError Exception: %s', repr(ex))
     else: # pylint: disable=useless-else-on-loop
         return 'unknown'
 
 
-# ref: https://github.com/kubesphere/kubesphere/blob/master/pkg/models/workloads/jobs.go#L47
 def run_job(namespace, jobname):
     """
     运行任务
@@ -175,3 +154,28 @@ def run_job(namespace, jobname):
 
     log.info('run job %s/%s successful', namespace, jobname)
     return ret
+
+
+
+
+def restart_deployment(kubeconfig_path, namespace, deployment_name):
+    # 指定配置文件路径
+    config.load_kube_config(config_file=kubeconfig_path)
+    # 创建 Kubernetes API 客户端
+    v1 = client.AppsV1Api()
+    # v1.patch_namespaced_deployment(deployment_name, namespace, body={'spec': {'replicas': 0}})
+    # time.sleep(3)
+    v1.patch_namespaced_deployment(deployment_name, namespace, body={'spec': {'replicas': 1}})
+    time.sleep(5)
+    # 指定要重启的Deployment的名称和命名空间
+    # namespace = "default" # 或者是你的deployment所在的其他命名空间
+
+def stop_deployment(kubeconfig_path, namespace, deployment_name):
+    # 指定配置文件路径
+    config.load_kube_config(config_file=kubeconfig_path)
+    # 创建 Kubernetes API 客户端
+    v1 = client.AppsV1Api()
+    v1.patch_namespaced_deployment(deployment_name, namespace, body={'spec': {'replicas': 0}})
+    time.sleep(5)
+    # 指定要重启的Deployment的名称和命名空间
+    # namespace = "default" # 或者是你的deployment所在的其他命名空间
