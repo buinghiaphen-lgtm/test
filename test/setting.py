@@ -15,7 +15,7 @@ REDIS_HNAME = os.getenv('REDIS_HNAME') or 'kafkaLastTime'
 # KAFKA相关配置
 KAFKA_TNAME = []
 #KAFKA_SERVER = os.getenv('KAFKA_SERVER') or '192.168.24.213:30014'
-KAFKA_SERVER = os.getenv('KAFKA_SERVER') or 'kafka-192.168.24.213-nip.io:30018'
+KAFKA_SERVER = os.getenv('KAFKA_SERVER') or 'my-cluster-kafka-bootstrap.ns-national:30018'
 
 # 数据库连接地址
 DB_HOST = os.getenv('DB_HOST') or '192.168.24.200'
