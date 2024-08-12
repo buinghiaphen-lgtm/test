@@ -1,11 +1,12 @@
 import redis
+from redis.sentinel import Sentinel
 import time
 import json
 from datetime import datetime
 from pathlib import Path
 import pylightxl as xl
 from kafka import TopicPartition, KafkaConsumer
-from setting import REDIS_HOST,REDIS_PORT,REDIS_DB,REDIS_HNAME
+from setting import REDIS_HOST,REDIS_DB,REDIS_HNAME
 from setting import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
 from setting import KAFKA_SERVER
 import json
@@ -15,36 +16,55 @@ from typing import Literal
 import pymysql
 from pymysql import FIELD_TYPE, converters
 from pymysql.constants import CLIENT
+# class REDIS:
+#     '''
+#     缓存库类
+#     '''
+#     def __init__(self,host:str = REDIS_HOST,
+#                  port:int = REDIS_PORT,
+#                  db:int = REDIS_DB):
+#         self.redis_pool = redis.ConnectionPool(
+#             host = host,
+#             port = port,
+#             db = db
+#         )
+#         self.hname = REDIS_HNAME
+#         conn_time = 0
+#         while conn_time < 3:
+#             try:
+#                 self.redis_conn = redis.Redis(connection_pool=self.redis_pool)
+#                 return
+#             except Exception as e:
+#                 conn_time += 1
+#                 print(f'redis连接失败:{e}，20秒后，第{conn_time}次重试')
+#                 # 20秒后重试
+#                 time.sleep(20)
+#
+#     def hget_value(self,redis_key):
+#         res = self.redis_conn.hget(self.hname,redis_key)
+#         return res
+#
+#     def hset_key_value(self,redis_key,redis_value):
+#         res = self.redis_conn.hset(self.hname,redis_key,redis_value)
+#         return res
+
+# 2024-08-12修改，修改为哨兵模式
 class REDIS:
     '''
     缓存库类
     '''
-    def __init__(self,host:str = REDIS_HOST,
-                 port:int = REDIS_PORT,
-                 db:int = REDIS_DB):
-        self.redis_pool = redis.ConnectionPool(
-            host = host,
-            port = port,
-            db = db
-        )
+    def __init__(self,REDIS_HOST:list = REDIS_HOST,
+                 REDIS_DB:int = REDIS_DB):
+        self.sentinel = Sentinel(REDIS_HOST, password='Vegas2.0', db=REDIS_DB)
+        self.master_client = self.sentinel.master_for(service_name='mymaster')
         self.hname = REDIS_HNAME
-        conn_time = 0
-        while conn_time < 3:
-            try:
-                self.redis_conn = redis.Redis(connection_pool=self.redis_pool)
-                return
-            except Exception as e:
-                conn_time += 1
-                print(f'redis连接失败:{e}，20秒后，第{conn_time}次重试')
-                # 20秒后重试
-                time.sleep(20)
 
     def hget_value(self,redis_key):
-        res = self.redis_conn.hget(self.hname,redis_key)
+        res = self.master_client.hget(self.hname,redis_key)
         return res
 
     def hset_key_value(self,redis_key,redis_value):
-        res = self.redis_conn.hset(self.hname,redis_key,redis_value)
+        res = self.master_client.hset(self.hname,redis_key,redis_value)
         return res
 
 

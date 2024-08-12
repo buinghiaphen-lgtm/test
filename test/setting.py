@@ -7,15 +7,30 @@ BASE_DIR = Path(__file__).parent.resolve()
 TEST_DATA_PATH = Path(BASE_DIR, 'data', '测试数据-实时推送-kafka工具.xlsx')
 
 # REDIS相关配置
-REDIS_HOST = os.getenv('REDIS_HOST') or '192.168.24.213'
-REDIS_PORT = os.getenv('REDIS_PORT') or 30008
+host_list = [
+    ('realtime-redis-0.realtime-redis-headless.ns-test-pub',26379),
+    ('realtime-redis-1.realtime-redis-headless.ns-test-pub',26379),
+    ('realtime-redis-2.realtime-redis-headless.ns-test-pub',26379)
+]
+# redis调试
+# host_list = [
+#     ('192.168.24.213',30033)
+# ]
+REDIS_HOST = os.getenv('REDIS_HOST') or host_list
+# REDIS_PORT = os.getenv('REDIS_PORT') or 30008
 REDIS_DB = os.getenv('REDIS_DB') or 0
 REDIS_HNAME = os.getenv('REDIS_HNAME') or 'kafkaLastTime'
 
+
 # KAFKA相关配置
 KAFKA_TNAME = []
-#KAFKA_SERVER = os.getenv('KAFKA_SERVER') or '192.168.24.213:30014'
-KAFKA_SERVER = os.getenv('KAFKA_SERVER') or 'my-cluster-kafka-bootstrap.ns-national:9092'
+# KAFKA_SERVER = os.getenv('KAFKA_SERVER') or '192.168.24.213:30014'
+# KAFKA_SERVER = os.getenv('KAFKA_SERVER') or 'my-cluster-kafka-bootstrap.ns-national:9092'
+# 调试用
+# KAFKA_SERVER = os.getenv('KAFKA_SERVER') or '192.168.24.213:30041,192.168.24.213:30042,192.168.24.213:30043'
+# KAFKA_SERVER = '192.168.24.213:31155'
+# 内网地址
+KAFKA_SERVER = os.getenv('KAFKA_SERVER') or 'national-mock-kafka.ns-national:9092'
 
 # 数据库连接地址
 DB_HOST = os.getenv('DB_HOST') or '192.168.24.200'

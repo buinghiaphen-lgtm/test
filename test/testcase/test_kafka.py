@@ -27,8 +27,6 @@ kubeconfig_path = None
 @pytest.fixture()
 def realtime_kafka_fixture(request):
     global kubeconfig_path
-    # kubeconfig_path = None
-    # kubeconfig_path = str(Path(BASE_DIR, "config", "kubeconfig.yaml"))
     namespace = load_client_config(kubeconfig_path)
     configmap_name = 'realtime-kafka-config'
     deployment_name = 'realtime-kafka-service'
@@ -263,7 +261,7 @@ class TestKafka:
         logger.info('-------------------- 开始测试...推送服务中断等于X小时且当天重启 --------------------')
         asyncio.run(self.bd_data(5,0))
         logger.info('-------------------- 测试结束...推送服务中断等于X小时且当天重启 --------------------')
-        time.sleep(30)
+        time.sleep(60)
 
 
     # 测试用例 6：推送服务中断等于X小时且跨天重启
@@ -374,13 +372,13 @@ class TestKafka:
         logger.info(f'bd_ticket开始时间---{start_time}')
         logger.info(f'bd_ticket结束时间---{end_time}')
         selectResultListList, count = proData.select_from_ticket(start_time, end_time)
-        logger.info(f'bd_ticket自己select出来的数据---{selectResultListList}')
+        #logger.info(f'bd_ticket自己select出来的数据---{selectResultListList}')
         logger.info(f'bd_ticket自己select出来的条数（加上表头）{count}')
         # 传参数据条数，去kafka里取数据
         data_key_value_list = consume_bd_ticket_message(count)
         data_list = proData.extract_ticket_values_add_title(data_key_value_list)
         data_list_len = len(data_list)
-        logger.info(f'bd_ticket在kafka拿到的的数据{data_list}')
+        #logger.info(f'bd_ticket在kafka拿到的的数据{data_list}')
         logger.info(f'bd_ticket在kafka拿到的的条数（加上表头）{data_list_len}')
         # 先比较条数是否正确
         assert count == data_list_len, f'bd_ticket条数错误，应该为{count}条，实际推送了{data_list_len}条'
