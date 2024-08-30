@@ -8,9 +8,9 @@ TEST_DATA_PATH = Path(BASE_DIR, 'data', '测试数据-实时推送-kafka工具.x
 
 # REDIS相关配置
 host_list = [
-    ('realtime-redis-0.realtime-redis-headless.ns-test-pub',26379),
-    ('realtime-redis-1.realtime-redis-headless.ns-test-pub',26379),
-    ('realtime-redis-2.realtime-redis-headless.ns-test-pub',26379)
+    ('realtime-redis-node-0.realtime-redis-headless.ns-test-pub',26379),
+    ('realtime-redis-node-1.realtime-redis-headless.ns-test-pub',26379),
+    ('realtime-redis-node-2.realtime-redis-headless.ns-test-pub',26379)
 ]
 # redis调试
 # host_list = [
@@ -30,7 +30,7 @@ KAFKA_TNAME = []
 # KAFKA_SERVER = os.getenv('KAFKA_SERVER') or '192.168.24.213:30041,192.168.24.213:30042,192.168.24.213:30043'
 # KAFKA_SERVER = '192.168.24.213:31155'
 # 内网地址
-KAFKA_SERVER = os.getenv('KAFKA_SERVER') or 'national-mock-kafka.ns-national:9092'
+KAFKA_SERVER = os.getenv('KAFKA_SERVER') or 'national-mock-kafka.ns-stage-mock:9092'
 
 # 数据库连接地址
 DB_HOST = os.getenv('DB_HOST') or '192.168.24.200'
