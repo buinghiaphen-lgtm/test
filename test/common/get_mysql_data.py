@@ -3,7 +3,8 @@ from pymysql.constants import CLIENT
 # import os
 # from common.read_data import data
 from pymysql import converters,FIELD_TYPE
-from setting import DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME
+# from setting import DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME
+from common.data import db_host,db_port,db_name,db_user,db_password
 
 pymysql.install_as_MySQLdb()
 
@@ -19,11 +20,11 @@ conv[FIELD_TYPE.TIME] = str  # convert dates to strings
 class MysqlDb:
 
     def __init__(self):
-        self.host = DB_HOST
-        self.port = DB_PORT
-        self.user = DB_USER
-        self.password = DB_PASSWORD
-        self.db_name = DB_NAME
+        self.host = db_host
+        self.port = db_port
+        self.user = db_user
+        self.password = db_password
+        self.db_name = db_name
         self.cursorclass = pymysql.cursors.DictCursor
         self.client_flag = CLIENT.MULTI_STATEMENTS
 

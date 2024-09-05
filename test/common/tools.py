@@ -7,8 +7,9 @@ from pathlib import Path
 import pylightxl as xl
 from kafka import TopicPartition, KafkaConsumer
 from setting import REDIS_HOST,REDIS_DB,REDIS_HNAME
+from common.data import kafka_url,db_host,db_port,db_user,db_password,db_name
 from setting import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
-from setting import KAFKA_SERVER
+# from setting import KAFKA_SERVER
 import json
 from common.logger import logger
 import pylightxl as xl
@@ -53,11 +54,35 @@ class REDIS:
     '''
     缓存库类
     '''
-    def __init__(self,REDIS_HOST:list = REDIS_HOST,
-                 REDIS_DB:int = REDIS_DB):
-        self.sentinel = Sentinel(REDIS_HOST, password='Vegas2.0', db=REDIS_DB)
-        self.master_client = self.sentinel.master_for(service_name='mymaster')
-        self.hname = REDIS_HNAME
+    # def __init__(self,REDIS_HOST:list = REDIS_HOST,
+    #              REDIS_DB:int = REDIS_DB):
+    #     self.sentinel = Sentinel(REDIS_HOST, password='Vegas2.0', db=REDIS_DB)
+    #     self.master_client = self.sentinel.master_for(service_name='mymaster')
+    #     self.hname = REDIS_HNAME
+    def __init__(self,
+                 sentinel_address: str,
+                 master_name: str,
+                 password: str = None,
+                 db: int = 0):
+        """Redis Sentinel连接
+        Args:
+            sentinel_address(str): _sentinel地址，格式为：ip1:port1,ip2:port2,ip3:port3
+            master_name(str): _主库名称
+            password(str, optional): _密码. Defaults to None.
+            db(int, optional): _数据库. Defaults to 0.
+        """
+        self.sentinel_address = sentinel_address
+        self.master_name = master_name
+        self.password = password
+        self.db = db
+        self.sentinel = Sentinel(
+            [(ip, port) for ip, port in
+             [i.split(':') for i in sentinel_address.split(',')]],
+            socket_timeout=5)
+        self.master = self.sentinel.master_for(self.master_name,
+                                               password=self.password,
+                                               db=self.db,
+                                               decode_responses=True)
 
     def hget_value(self,redis_key):
         res = self.master_client.hget(self.hname,redis_key)
@@ -72,7 +97,7 @@ def clear_ticket_message():
     '''清除KAFKA的bd_ticket消息
     :return:
     '''
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+    consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                              enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
     consumer.assign([TopicPartition('bd_ticket', 0)])
     for message in consumer:
@@ -82,7 +107,7 @@ def clear_cancel_ticket_message():
     '''清除KAFKA的bd_cancel_ticket消息
     :return:
     '''
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+    consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                              enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
     consumer.assign([TopicPartition('bd_cancel_ticket', 0)])
     for message in consumer:
@@ -92,7 +117,7 @@ def clear_undo_ticket_message():
     '''清除KAFKA的bd_undo_ticket消息
     :return:
     '''
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+    consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                              enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
     consumer.assign([TopicPartition('bd_undo_ticket', 0)])
     for message in consumer:
@@ -102,7 +127,7 @@ def clear_win_ticket_message():
     '''清除KAFKA的bd_win_ticket消息
     :return:
     '''
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+    consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                              enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
     consumer.assign([TopicPartition('bd_win_ticket', 0)])
     for message in consumer:
@@ -112,7 +137,7 @@ def clear_paid_ticket_message():
     '''清除KAFKA的bd_paid_ticket消息
     :return:
     '''
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+    consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                              enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
     consumer.assign([TopicPartition('bd_paid_ticket', 0)])
     for message in consumer:
@@ -122,7 +147,7 @@ def clear_win_ticket_prize_message():
     '''清除KAFKA的bd_win_ticket_prize消息
     :return:
     '''
-    consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+    consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                              enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
     consumer.assign([TopicPartition('bd_win_ticket_prize', 0)])
     for message in consumer:
@@ -133,7 +158,7 @@ def consume_bd_ticket_message(count:int):
         return []
     else:
         count = count - 1
-        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+        consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                                       enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
         consumer.assign([TopicPartition('bd_ticket', 0)])
         t_count = 0
@@ -174,7 +199,7 @@ def consume_bd_cancel_ticket_message(count:int):
         return []
     else:
         count = count - 1
-        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+        consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                                       enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
         consumer.assign([TopicPartition('bd_cancel_ticket', 0)])
         t_count = 0
@@ -216,7 +241,7 @@ def consume_bd_undo_ticket_message(count:int):
         return []
     else:
         count = count - 1
-        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+        consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                                       enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
         consumer.assign([TopicPartition('bd_undo_ticket', 0)])
         t_count = 0
@@ -258,7 +283,7 @@ def consume_bd_win_ticket_message(count:int):
         return []
     else:
         count = count - 1
-        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+        consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                                       enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
         consumer.assign([TopicPartition('bd_win_ticket', 0)])
         t_count = 0
@@ -300,7 +325,7 @@ def consume_bd_paid_ticket_message(count:int):
         return []
     else:
         count = count - 1
-        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+        consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                                       enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
         consumer.assign([TopicPartition('bd_paid_ticket', 0)])
         t_count = 0
@@ -342,7 +367,7 @@ def consume_bd_win_ticket_prize_message(count:int):
         return []
     else:
         count = count - 1
-        consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, auto_offset_reset='earliest',
+        consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
                                       enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
         consumer.assign([TopicPartition('bd_win_ticket_prize', 0)])
         t_count = 0
@@ -582,10 +607,10 @@ class DB:
     '''
     sql = None
 
-    def __init__(self, host: str = DB_HOST,
-                 port: int = int(DB_PORT), user: str = DB_USER,
-                 password: str = DB_PASSWORD,
-                 database: str = DB_NAME) -> None:
+    def __init__(self, host: str = db_host,
+                 port: int = int(db_port), user: str = db_user,
+                 password: str = db_password,
+                 database: str = db_name) -> None:
         """_summary_
 
         Args:

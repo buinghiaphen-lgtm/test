@@ -6,6 +6,12 @@ BASE_DIR = Path(__file__).parent.resolve()
 # 测试数据路径
 TEST_DATA_PATH = Path(BASE_DIR, 'data', '测试数据-实时推送-kafka工具.xlsx')
 
+kubeconfig_path = Path(Path.home(), '.kube/config')
+# ------K8S配置------
+#  命名空间
+NAMESPACE = os.getenv('NAMESPACE') or 'ns-test-mng'
+KUBE_CONFIG_FILE = Path(Path.home(), kubeconfig_path)
+
 # REDIS相关配置
 host_list = [
     ('realtime-redis-node-0.realtime-redis-headless.ns-test-pub',26379),
@@ -17,10 +23,11 @@ host_list = [
 #     ('192.168.24.213',30033)
 # ]
 REDIS_HOST = os.getenv('REDIS_HOST') or host_list
-# REDIS_PORT = os.getenv('REDIS_PORT') or 30008
+REDIS_PORT = os.getenv('REDIS_PORT') or 30008
 REDIS_DB = os.getenv('REDIS_DB') or 0
 REDIS_HNAME = os.getenv('REDIS_HNAME') or 'kafkaLastTime'
-
+realtime_redis_password=os.getenv('sp_lock_redis_password') or 'Vegas2.0'
+realtime_redis_master_name= os.getenv('realtime_redis_master_name') or 'mymaster'
 
 # KAFKA相关配置
 KAFKA_TNAME = []

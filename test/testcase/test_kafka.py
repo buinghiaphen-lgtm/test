@@ -7,13 +7,15 @@ import asyncio
 from datetime import datetime, timedelta
 
 from common import data as comdata
-from common.tools import Excel, REDIS
+from common.tools import Excel,REDIS
 from common.tools import consume_bd_ticket_message, consume_bd_cancel_ticket_message, consume_bd_undo_ticket_message, consume_bd_win_ticket_message, consume_bd_paid_ticket_message, consume_bd_win_ticket_prize_message
 from common.tools import  clear_ticket_message, clear_cancel_ticket_message, clear_undo_ticket_message, clear_win_ticket_message, clear_paid_ticket_message, clear_win_ticket_prize_message
 from common.logger import logger
 from common.k8sops import load_client_config, modify_configmap_by_key, restart_deployment, stop_deployment
 from common import processData as proData
+from common.data import realtime_redis_sentinel_address,realtime_redis_master_name,realtime_redis_password
 from setting import TEST_DATA_PATH,BASE_DIR
+
 
 excel_data = Excel(TEST_DATA_PATH)
 
@@ -22,6 +24,10 @@ redis_init_time_list = []
 current_init_time = ''
 kubeconfig_path = None
 # kubeconfig_path = str(Path(BASE_DIR, "config", "kubeconfig.yaml"))
+
+REDIS = REDIS(
+    sentinel_address=realtime_redis_sentinel_address, master_name=realtime_redis_master_name,
+    password=realtime_redis_password).master
 
 
 @pytest.fixture()
