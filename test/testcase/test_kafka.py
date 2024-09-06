@@ -25,9 +25,9 @@ current_init_time = ''
 kubeconfig_path = None
 # kubeconfig_path = str(Path(BASE_DIR, "config", "kubeconfig.yaml"))
 
-REDIS = REDIS(
-    sentinel_address=realtime_redis_sentinel_address, master_name=realtime_redis_master_name,
-    password=realtime_redis_password).master
+# redis_request = REDIS(
+#     sentinel_address=realtime_redis_sentinel_address, master_name=realtime_redis_master_name,
+#     password=realtime_redis_password).master
 
 
 @pytest.fixture()

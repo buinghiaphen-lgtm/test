@@ -7,7 +7,7 @@ from pathlib import Path
 import pylightxl as xl
 from kafka import TopicPartition, KafkaConsumer
 from setting import REDIS_HOST,REDIS_DB,REDIS_HNAME
-from common.data import kafka_url,db_host,db_port,db_user,db_password,db_name
+from common.data import kafka_url,db_host,db_port,db_user,db_password,db_name,realtime_redis_sentinel_address,realtime_redis_password,realtime_redis_master_name
 from setting import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
 # from setting import KAFKA_SERVER
 import json
@@ -54,35 +54,35 @@ class REDIS:
     '''
     缓存库类
     '''
-    # def __init__(self,REDIS_HOST:list = REDIS_HOST,
-    #              REDIS_DB:int = REDIS_DB):
-    #     self.sentinel = Sentinel(REDIS_HOST, password='Vegas2.0', db=REDIS_DB)
-    #     self.master_client = self.sentinel.master_for(service_name='mymaster')
-    #     self.hname = REDIS_HNAME
-    def __init__(self,
-                 sentinel_address: str,
-                 master_name: str,
-                 password: str = None,
-                 db: int = 0):
-        """Redis Sentinel连接
-        Args:
-            sentinel_address(str): _sentinel地址，格式为：ip1:port1,ip2:port2,ip3:port3
-            master_name(str): _主库名称
-            password(str, optional): _密码. Defaults to None.
-            db(int, optional): _数据库. Defaults to 0.
-        """
-        self.sentinel_address = sentinel_address
-        self.master_name = master_name
-        self.password = password
-        self.db = db
-        self.sentinel = Sentinel(
-            [(ip, port) for ip, port in
-             [i.split(':') for i in sentinel_address.split(',')]],
-            socket_timeout=5)
-        self.master = self.sentinel.master_for(self.master_name,
-                                               password=self.password,
-                                               db=self.db,
-                                               decode_responses=True)
+    def __init__(self,realtime_redis_sentinel_address:list = realtime_redis_sentinel_address,
+                 REDIS_DB:int = 0):
+        self.sentinel = Sentinel(realtime_redis_sentinel_address, password=realtime_redis_password, db=REDIS_DB)
+        self.master_client = self.sentinel.master_for(service_name=realtime_redis_master_name)
+        self.hname = realtime_redis_sentinel_address
+    # def __init__(self,
+    #              sentinel_address: str,
+    #              master_name: str,
+    #              password: str = None,
+    #              db: int = 0):
+    #     """Redis Sentinel连接
+    #     Args:
+    #         sentinel_address(str): _sentinel地址，格式为：ip1:port1,ip2:port2,ip3:port3
+    #         master_name(str): _主库名称
+    #         password(str, optional): _密码. Defaults to None.
+    #         db(int, optional): _数据库. Defaults to 0.
+    #     """
+    #     self.sentinel_address = sentinel_address
+    #     self.master_name = master_name
+    #     self.password = password
+    #     self.db = db
+    #     self.sentinel = Sentinel(
+    #         [(ip, port) for ip, port in
+    #          [i.split(':') for i in sentinel_address.split(',')]],
+    #         socket_timeout=5)
+    #     self.master = self.sentinel.master_for(self.master_name,
+    #                                            password=self.password,
+    #                                            db=self.db,
+    #                                            decode_responses=True)
 
     def hget_value(self,redis_key):
         res = self.master_client.hget(self.hname,redis_key)

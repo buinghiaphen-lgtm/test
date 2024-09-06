@@ -138,5 +138,5 @@ else:
     # sp_lock_redis_password = 'Vegas2.0'
     # sp_lock_redis_master_name = 'mymaster'
     #kafka
-    KAFKA_SERVER = KAFKA_SERVER
+    kafka_url = KAFKA_SERVER
 
