@@ -341,19 +341,27 @@ class TestKafka:
                 start_time =  datetime.strptime(current_init_time, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d') + ' 00:00:00'
                 # 去查redis发生变化，把值赋给end_time
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                    redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
             elif flag == 8 or flag == 9 or flag == 10:
                 start_time = datetime.strptime(redis_init_time_list[0], '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time_list[0] == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                    redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
             else:
                 start_time = datetime.strptime(redis_init_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
@@ -363,16 +371,23 @@ class TestKafka:
                 redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                    redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
         else:
-            redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+            # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+            redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             start_time = datetime.strptime(redis_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
             start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
-            redis_time_new = REDIS().hget_value('Ticket').decode('utf-8')
+            # redis_time_new = REDIS().hget_value('Ticket').decode('utf-8')
+            redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             while redis_time == redis_time_new:
                 await asyncio.sleep(0.5)
-                redis_time_new = REDIS().hget_value('Ticket').decode('utf-8')
+                # redis_time_new = REDIS().hget_value('Ticket').decode('utf-8')
+                redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
             end_time = redis_time_new
 
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数

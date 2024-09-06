@@ -107,8 +107,8 @@ def wait_job_completed(namespace, jobname, resource_version, request_timeout):
             if ex.status == watch.watch.HTTP_STATUS_GONE:
                 log.warning('Got `410 Gone`, retry again. ApiException Exception: %s', repr(ex))
                 resource_version = None
-                break
-            raise
+            else:
+                raise
         except HTTPError as ex:
             log.warning('An error occurred in the request, retry again. HTTPError Exception: %s', repr(ex))
     else: # pylint: disable=useless-else-on-loop
