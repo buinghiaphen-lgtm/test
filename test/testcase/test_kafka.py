@@ -359,7 +359,8 @@ class TestKafka:
                 start_time = datetime.strptime(redis_init_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('Ticket').decode('utf-8')
+                redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
                     redis_time = REDIS().hget_value('Ticket').decode('utf-8')
