@@ -55,9 +55,14 @@ class REDIS:
     缓存库类
     '''
     def __init__(self,realtime_redis_sentinel_address:list = realtime_redis_sentinel_address,
-                 REDIS_DB:int = 0):
-        self.sentinel = Sentinel(realtime_redis_sentinel_address, password=realtime_redis_password, db=REDIS_DB)
-        self.master_client = self.sentinel.master_for(service_name=realtime_redis_master_name)
+                 REDIS_DB:int = 0,realtime_redis_master_name:str = realtime_redis_master_name,realtime_redis_password:str = realtime_redis_password):
+        self.sentinel = Sentinel( [(ip, port) for ip, port in
+             [i.split(':') for i in realtime_redis_sentinel_address.split(',')]],
+            socket_timeout=5)
+        self.master_client = self.sentinel.master_for(realtime_redis_master_name,
+                                               password=realtime_redis_password,
+                                               db=REDIS_DB,
+                                               decode_responses=True)
         self.hname = realtime_redis_sentinel_address
     # def __init__(self,
     #              sentinel_address: str,
