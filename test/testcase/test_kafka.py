@@ -469,7 +469,7 @@ class TestKafka:
                 # redis_time_new = REDIS().hget_value('cancel_ticket').decode('utf-8')
                 redis_time_new = redis_request.hget(kafkaLastTime, 'cancel_ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
-            end_time = redis_time_new
+            end_time = redis_time
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_cancel_ticket开始时间{start_time}')
         logger.info(f'bd_cancel_ticket结束时间{end_time}')
