@@ -322,8 +322,7 @@ def select_from_cancel_ticket(begin_time, end_time):
                 WHERE 
                     cancel_status = 0 
                 AND 
-                    cancel_time BETWEEN '{begin_time}' AND '{end_time}'
-                ORDER BY cancel_id;
+                    cancel_time BETWEEN '{begin_time}' AND '{end_time}' ORDER BY cancel_id;
     '''
     # 获取的database的数据
     # select_result的数据：listdict格式 [ {字段名1:值1,字段名2:值2, 字段名3:值3}, {字段名1:值11,字段名2:值22, 字段名3:值33}  ]
