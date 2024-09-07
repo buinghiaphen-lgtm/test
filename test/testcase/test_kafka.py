@@ -91,7 +91,7 @@ def realtime_kafka_fixture(request):
         clear_win_ticket_prize_message()
         # 修改六个key的redis，redis_time是最后推送时间
         # datetime_test = datetime.strptime(redis_time, "%Y-%m-%d %H:%M:%S")
-        logger.info('aaaaaa',redis_time)
+        logger.info(redis_time)
         redis_request.hset('kafkaLastTime','Ticket', redis_time)
         redis_request.hset('cancel_ticket', redis_time)
         redis_request.hset('undo_ticket', redis_time)
