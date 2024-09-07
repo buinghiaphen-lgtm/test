@@ -24,6 +24,7 @@ redis_init_time_list = []
 current_init_time = ''
 kubeconfig_path = None
 # kubeconfig_path = str(Path(BASE_DIR, "config", "kubeconfig.yaml"))
+kafkaLastTime = 'kafkaLastTime'
 
 redis_request = REDIS(
     sentinel_address=realtime_redis_sentinel_address, master_name=realtime_redis_master_name,
@@ -36,7 +37,7 @@ def realtime_kafka_fixture(request):
     namespace = load_client_config(kubeconfig_path)
     configmap_name = 'realtime-kafka-config'
     deployment_name = 'realtime-kafka-service'
-    kafkaLastTime = 'kafkaLastTime'
+
     stop_deployment(kubeconfig_path, namespace, deployment_name)
     logger.info(request.param)
     data = request.param
@@ -346,7 +347,7 @@ class TestKafka:
                 # 去查redis发生变化，把值赋给end_time
                 # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
                 # redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
-                redis_time_new = redis_request.hget('kafkaLastTime','Ticket').encode('utf-8')
+                redis_time_new = redis_request.hget(kafkaLastTime,'Ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
@@ -366,7 +367,7 @@ class TestKafka:
                 while redis_init_time_list[0] == redis_time:
                     await asyncio.sleep(0.5)
                     # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
-                    redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                    redis_time_new = redis_request.hget('Ticket', 'Ticket').encode('utf-8')
                     redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
             else:
