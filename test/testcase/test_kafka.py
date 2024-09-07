@@ -25,9 +25,9 @@ current_init_time = ''
 kubeconfig_path = None
 # kubeconfig_path = str(Path(BASE_DIR, "config", "kubeconfig.yaml"))
 
-# redis_request = REDIS(
-#     sentinel_address=realtime_redis_sentinel_address, master_name=realtime_redis_master_name,
-#     password=realtime_redis_password).master
+redis_request = REDIS(
+    sentinel_address=realtime_redis_sentinel_address, master_name=realtime_redis_master_name,
+    password=realtime_redis_password).master
 
 
 @pytest.fixture()
@@ -90,12 +90,12 @@ def realtime_kafka_fixture(request):
         clear_paid_ticket_message()
         clear_win_ticket_prize_message()
         # 修改六个key的redis，redis_time是最后推送时间
-        REDIS().hset_key_value('Ticket', redis_time)
-        REDIS().hset_key_value('cancel_ticket', redis_time)
-        REDIS().hset_key_value('undo_ticket', redis_time)
-        REDIS().hset_key_value('Win_ticket', redis_time)
-        REDIS().hset_key_value('zWin_ticket', redis_time)
-        REDIS().hset_key_value('Win_ticket_prize', redis_time)
+        redis_request.hset('Ticket', redis_time)
+        redis_request.hset('cancel_ticket', redis_time)
+        redis_request.hset('undo_ticket', redis_time)
+        redis_request.hset('Win_ticket', redis_time)
+        redis_request.hset('zWin_ticket', redis_time)
+        redis_request.hset('Win_ticket_prize', redis_time)
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
     elif data[0] == '循环推送':
@@ -139,12 +139,12 @@ def realtime_kafka_fixture(request):
         proData.insert_into_paid_ticket(current_time)
         proData.insert_into_win_ticket_prize(current_time)
         # 修改六个key的redis，redis_time是最后推送时间
-        REDIS().hset_key_value('Ticket', redis_time)
-        REDIS().hset_key_value('cancel_ticket', redis_time)
-        REDIS().hset_key_value('undo_ticket', redis_time)
-        REDIS().hset_key_value('Win_ticket', redis_time)
-        REDIS().hset_key_value('zWin_ticket', redis_time)
-        REDIS().hset_key_value('Win_ticket_prize', redis_time)
+        redis_request.hset('Ticket', redis_time)
+        redis_request.hset('cancel_ticket', redis_time)
+        redis_request.hset('undo_ticket', redis_time)
+        redis_request.hset('Win_ticket', redis_time)
+        redis_request.hset('zWin_ticket', redis_time)
+        redis_request.hset('Win_ticket_prize', redis_time)
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
     else:
@@ -189,12 +189,12 @@ def realtime_kafka_fixture(request):
         proData.insert_into_paid_ticket_page(current_time)
         proData.insert_into_win_ticket_prize_page(current_time)
         # 修改六个key的redis，redis_time是最后推送时间
-        REDIS().hset_key_value('Ticket', redis_time_list[0])
-        REDIS().hset_key_value('cancel_ticket', redis_time_list[1])
-        REDIS().hset_key_value('undo_ticket', redis_time_list[2])
-        REDIS().hset_key_value('zWin_ticket', redis_time_list[3])
-        REDIS().hset_key_value('Win_ticket', redis_time_list[4])
-        REDIS().hset_key_value('Win_ticket_prize', redis_time_list[5])
+        redis_request.hset('Ticket', redis_time_list[0])
+        redis_request.hset('cancel_ticket', redis_time_list[1])
+        redis_request.hset('undo_ticket', redis_time_list[2])
+        redis_request.hset('zWin_ticket', redis_time_list[3])
+        redis_request.hset('Win_ticket', redis_time_list[4])
+        redis_request.hset('Win_ticket_prize', redis_time_list[5])
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
     yield
@@ -342,12 +342,14 @@ class TestKafka:
                 # 去查redis发生变化，把值赋给end_time
                 # 去查redis发生变化，把值赋给end_time
                 # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
-                redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                # redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime','Ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
                     # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
-                    redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                    # redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'Ticket').encode('utf-8')
                     redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
             elif flag == 8 or flag == 9 or flag == 10:
@@ -355,7 +357,8 @@ class TestKafka:
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
                 # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
-                redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                # redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'Ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time_list[0] == redis_time:
                     await asyncio.sleep(0.5)
@@ -367,26 +370,29 @@ class TestKafka:
                 start_time = datetime.strptime(redis_init_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                # redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'Ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                    # redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'Ticket').encode('utf-8')
                     redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
         else:
             # redis_time = REDIS().hget_value('Ticket').decode('utf-8')
-            redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+            # redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'Ticket').encode('utf-8')
             redis_time = redis_time_new.decode('utf-8')
             start_time = datetime.strptime(redis_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
             start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
             # redis_time_new = REDIS().hget_value('Ticket').decode('utf-8')
-            redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'Ticket').encode('utf-8')
             redis_time = redis_time_new.decode('utf-8')
             while redis_time == redis_time_new:
                 await asyncio.sleep(0.5)
                 # redis_time_new = REDIS().hget_value('Ticket').decode('utf-8')
-                redis_time_new = REDIS().hget_value('Ticket').encode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'Ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
             end_time = redis_time_new
 
@@ -423,28 +429,42 @@ class TestKafka:
                 start_time = datetime.strptime(redis_init_time_list[1], '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'cancel_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time_list[1] == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'cancel_ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
             else:
                 start_time = datetime.strptime(redis_init_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'cancel_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'cancel_ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
         else:
-            redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+            # redis_time = REDIS().hget_value('cancel_ticket').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'cancel_ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             start_time = datetime.strptime(redis_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
             start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
-            redis_time_new = REDIS().hget_value('cancel_ticket').decode('utf-8')
+            # redis_time_new = REDIS().hget_value('cancel_ticket').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'cancel_ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             while redis_time == redis_time_new:
                 await asyncio.sleep(0.5)
-                redis_time_new = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                # redis_time_new = REDIS().hget_value('cancel_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'cancel_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
             end_time = redis_time_new
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_cancel_ticket开始时间{start_time}')
@@ -479,28 +499,42 @@ class TestKafka:
                 start_time = datetime.strptime(redis_init_time_list[2], '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'undo_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time_list[2] == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'undo_ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
             else:
                 start_time = datetime.strptime(redis_init_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'undo_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'undo_ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
         else:
-            redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+            # redis_time = REDIS().hget_value('undo_ticket').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'undo_ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             start_time = datetime.strptime(redis_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
             start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
-            redis_time_new = REDIS().hget_value('undo_ticket').decode('utf-8')
+            # redis_time_new = REDIS().hget_value('undo_ticket').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'undo_ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             while redis_time == redis_time_new:
                 await asyncio.sleep(0.5)
-                redis_time_new = REDIS().hget_value('undo_ticket').decode('utf-8')
+                # redis_time_new = REDIS().hget_value('undo_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'undo_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
             end_time = redis_time_new
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_undo_ticket开始时间{start_time}')
@@ -535,31 +569,45 @@ class TestKafka:
                 start_time = datetime.strptime(redis_init_time_list[3], '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'zWin_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time_list[3] == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'zWin_ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
             else:
                 start_time = datetime.strptime(redis_init_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
 
-                redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'zWin_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 logger.info(f'11redis_time{redis_time}')
                 logger.info(f'11redis_init_time{redis_init_time}')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'zWin_ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
         else:
-            redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+            # redis_time = REDIS().hget_value('zWin_ticket').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'zWin_ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             start_time = datetime.strptime(redis_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
             start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
-            redis_time_new = REDIS().hget_value('zWin_ticket').decode('utf-8')
+            # redis_time_new = REDIS().hget_value('zWin_ticket').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'zWin_ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             while redis_time == redis_time_new:
                 await asyncio.sleep(0.5)
-                redis_time_new = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                # redis_time_new = REDIS().hget_value('zWin_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'zWin_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
             end_time = redis_time_new
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_win_ticket开始时间{start_time}')
@@ -594,28 +642,42 @@ class TestKafka:
                 start_time = datetime.strptime(redis_init_time_list[4], '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time_list[4] == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
             else:
                 start_time = datetime.strptime(redis_init_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+                # redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+                    # redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
         else:
-            redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+            # redis_time = REDIS().hget_value('Win_ticket').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             start_time = datetime.strptime(redis_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
             start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
-            redis_time_new = REDIS().hget_value('Win_ticket').decode('utf-8')
+            # redis_time_new = REDIS().hget_value('Win_ticket').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             while redis_time == redis_time_new:
                 await asyncio.sleep(0.5)
-                redis_time_new = REDIS().hget_value('Win_ticket').decode('utf-8')
+                # redis_time_new = REDIS().hget_value('Win_ticket').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
             end_time = redis_time_new
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_paid_ticket开始时间{start_time}')
@@ -650,28 +712,42 @@ class TestKafka:
                 start_time = datetime.strptime(redis_init_time_list[5], '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                # redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket_prize').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time_list[5] == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                    # redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket_prize').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
             else:
                 start_time = datetime.strptime(redis_init_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
                 start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
                 # 去查redis发生变化，把值赋给end_time
-                redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                # redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket_prize').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
                 while redis_init_time == redis_time:
                     await asyncio.sleep(0.5)
-                    redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                    # redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                    redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket_prize').encode('utf-8')
+                    redis_time = redis_time_new.decode('utf-8')
                 end_time = redis_time
         else:
-            redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+            # redis_time = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket_prize').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             start_time = datetime.strptime(redis_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
             start_time = start_time.strftime('%Y-%m-%d %H:%M:%S')
-            redis_time_new = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+            # redis_time_new = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+            redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket_prize').encode('utf-8')
+            redis_time = redis_time_new.decode('utf-8')
             while redis_time == redis_time_new:
                 await asyncio.sleep(0.5)
-                redis_time_new = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                # redis_time_new = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
+                redis_time_new = redis_request.hget('kafkaLastTime', 'Win_ticket_prize').encode('utf-8')
+                redis_time = redis_time_new.decode('utf-8')
             end_time = redis_time_new
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_win_ticket_prize开始时间{start_time}')

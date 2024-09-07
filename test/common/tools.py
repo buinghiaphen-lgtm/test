@@ -53,48 +53,48 @@ class REDIS:
     '''
     缓存库类
     '''
-    def __init__(self,realtime_redis_sentinel_address:list = realtime_redis_sentinel_address,
-                 REDIS_DB:int = 0,realtime_redis_master_name:str = realtime_redis_master_name,realtime_redis_password:str = realtime_redis_password):
-        self.sentinel = Sentinel( [(ip, port) for ip, port in
-             [i.split(':') for i in realtime_redis_sentinel_address.split(',')]],
-            socket_timeout=5)
-        self.master_client = self.sentinel.master_for(realtime_redis_master_name,
-                                               password=realtime_redis_password,
-                                               db=REDIS_DB,
-                                               decode_responses=True)
-        self.hname = realtime_redis_sentinel_address
-    # def __init__(self,
-    #              sentinel_address: str,
-    #              master_name: str,
-    #              password: str = None,
-    #              db: int = 0):
-    #     """Redis Sentinel连接
-    #     Args:
-    #         sentinel_address(str): _sentinel地址，格式为：ip1:port1,ip2:port2,ip3:port3
-    #         master_name(str): _主库名称
-    #         password(str, optional): _密码. Defaults to None.
-    #         db(int, optional): _数据库. Defaults to 0.
-    #     """
-    #     self.sentinel_address = sentinel_address
-    #     self.master_name = master_name
-    #     self.password = password
-    #     self.db = db
-    #     self.sentinel = Sentinel(
-    #         [(ip, port) for ip, port in
-    #          [i.split(':') for i in sentinel_address.split(',')]],
+    # def __init__(self,realtime_redis_sentinel_address:list = realtime_redis_sentinel_address,
+    #              REDIS_DB:int = 0,realtime_redis_master_name:str = realtime_redis_master_name,realtime_redis_password:str = realtime_redis_password):
+    #     self.sentinel = Sentinel( [(ip, port) for ip, port in
+    #          [i.split(':') for i in realtime_redis_sentinel_address.split(',')]],
     #         socket_timeout=5)
-    #     self.master = self.sentinel.master_for(self.master_name,
-    #                                            password=self.password,
-    #                                            db=self.db,
+    #     self.master_client = self.sentinel.master_for(realtime_redis_master_name,
+    #                                            password=realtime_redis_password,
+    #                                            db=REDIS_DB,
     #                                            decode_responses=True)
+    #     self.hname = realtime_redis_sentinel_address
+    def __init__(self,
+                 sentinel_address: str,
+                 master_name: str,
+                 password: str = None,
+                 db: int = 0):
+        """Redis Sentinel连接
+        Args:
+            sentinel_address(str): _sentinel地址，格式为：ip1:port1,ip2:port2,ip3:port3
+            master_name(str): _主库名称
+            password(str, optional): _密码. Defaults to None.
+            db(int, optional): _数据库. Defaults to 0.
+        """
+        self.sentinel_address = sentinel_address
+        self.master_name = master_name
+        self.password = password
+        self.db = db
+        self.sentinel = Sentinel(
+            [(ip, port) for ip, port in
+             [i.split(':') for i in sentinel_address.split(',')]],
+            socket_timeout=5)
+        self.master = self.sentinel.master_for(self.master_name,
+                                               password=self.password,
+                                               db=self.db,
+                                               decode_responses=True)
 
-    def hget_value(self,redis_key):
-        res = self.master_client.hget(self.hname,redis_key)
-        return res
-
-    def hset_key_value(self,redis_key,redis_value):
-        res = self.master_client.hset(self.hname,redis_key,redis_value)
-        return res
+    # def hget_value(self,redis_key):
+    #     res = self.master_client.hget(self.hname,redis_key)
+    #     return res
+    #
+    # def hset_key_value(self,redis_key,redis_value):
+    #     res = self.master_client.hset(self.hname,redis_key,redis_value)
+    #     return res
 
 
 def clear_ticket_message():
