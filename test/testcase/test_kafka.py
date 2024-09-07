@@ -36,6 +36,7 @@ def realtime_kafka_fixture(request):
     namespace = load_client_config(kubeconfig_path)
     configmap_name = 'realtime-kafka-config'
     deployment_name = 'realtime-kafka-service'
+    kafkaLastTime = 'kafkaLastTime'
     stop_deployment(kubeconfig_path, namespace, deployment_name)
     logger.info(request.param)
     data = request.param
@@ -92,12 +93,12 @@ def realtime_kafka_fixture(request):
         # 修改六个key的redis，redis_time是最后推送时间
         # datetime_test = datetime.strptime(redis_time, "%Y-%m-%d %H:%M:%S")
         logger.info(redis_time)
-        redis_request.hset('kafkaLastTime','Ticket', redis_time)
-        redis_request.hset('cancel_ticket', redis_time)
-        redis_request.hset('undo_ticket', redis_time)
-        redis_request.hset('Win_ticket', redis_time)
-        redis_request.hset('zWin_ticket', redis_time)
-        redis_request.hset('Win_ticket_prize', redis_time)
+        redis_request.hset(kafkaLastTime,'Ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'cancel_ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'undo_ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'Win_ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'zWin_ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'Win_ticket_prize', redis_time)
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
     elif data[0] == '循环推送':
@@ -141,12 +142,12 @@ def realtime_kafka_fixture(request):
         proData.insert_into_paid_ticket(current_time)
         proData.insert_into_win_ticket_prize(current_time)
         # 修改六个key的redis，redis_time是最后推送时间
-        redis_request.hset('Ticket', redis_time)
-        redis_request.hset('cancel_ticket', redis_time)
-        redis_request.hset('undo_ticket', redis_time)
-        redis_request.hset('Win_ticket', redis_time)
-        redis_request.hset('zWin_ticket', redis_time)
-        redis_request.hset('Win_ticket_prize', redis_time)
+        redis_request.hset(kafkaLastTime,'Ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'cancel_ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'undo_ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'Win_ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'zWin_ticket', redis_time)
+        redis_request.hset(kafkaLastTime,'Win_ticket_prize', redis_time)
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
     else:
@@ -191,12 +192,12 @@ def realtime_kafka_fixture(request):
         proData.insert_into_paid_ticket_page(current_time)
         proData.insert_into_win_ticket_prize_page(current_time)
         # 修改六个key的redis，redis_time是最后推送时间
-        redis_request.hset('Ticket', redis_time_list[0])
-        redis_request.hset('cancel_ticket', redis_time_list[1])
-        redis_request.hset('undo_ticket', redis_time_list[2])
-        redis_request.hset('zWin_ticket', redis_time_list[3])
-        redis_request.hset('Win_ticket', redis_time_list[4])
-        redis_request.hset('Win_ticket_prize', redis_time_list[5])
+        redis_request.hset(kafkaLastTime,'Ticket', redis_time_list[0])
+        redis_request.hset(kafkaLastTime,'cancel_ticket', redis_time_list[1])
+        redis_request.hset(kafkaLastTime,'undo_ticket', redis_time_list[2])
+        redis_request.hset(kafkaLastTime,'zWin_ticket', redis_time_list[3])
+        redis_request.hset(kafkaLastTime,'Win_ticket', redis_time_list[4])
+        redis_request.hset(kafkaLastTime,'Win_ticket_prize', redis_time_list[5])
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
     yield
