@@ -398,7 +398,7 @@ class TestKafka:
                 # redis_time_new = REDIS().hget_value('Ticket').decode('utf-8')
                 redis_time_new = redis_request.hget(kafkaLastTime, 'Ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
-            end_time = redis_time_new
+            end_time = redis_time
 
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_ticket开始时间---{start_time}')
@@ -539,7 +539,7 @@ class TestKafka:
                 # redis_time_new = REDIS().hget_value('undo_ticket').decode('utf-8')
                 redis_time_new = redis_request.hget(kafkaLastTime, 'undo_ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
-            end_time = redis_time_new
+            end_time = redis_time
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_undo_ticket开始时间{start_time}')
         logger.info(f'bd_undo_ticket结束时间{end_time}')
@@ -612,7 +612,7 @@ class TestKafka:
                 # redis_time_new = REDIS().hget_value('zWin_ticket').decode('utf-8')
                 redis_time_new = redis_request.hget(kafkaLastTime, 'zWin_ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
-            end_time = redis_time_new
+            end_time = redis_time
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_win_ticket开始时间{start_time}')
         logger.info(f'bd_win_ticket结束时间{end_time}')
@@ -682,7 +682,7 @@ class TestKafka:
                 # redis_time_new = REDIS().hget_value('Win_ticket').decode('utf-8')
                 redis_time_new = redis_request.hget(kafkaLastTime, 'Win_ticket').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
-            end_time = redis_time_new
+            end_time = redis_time
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_paid_ticket开始时间{start_time}')
         logger.info(f'bd_paid_ticket结束时间{end_time}')
@@ -752,7 +752,7 @@ class TestKafka:
                 # redis_time_new = REDIS().hget_value('Win_ticket_prize').decode('utf-8')
                 redis_time_new = redis_request.hget(kafkaLastTime, 'Win_ticket_prize').encode('utf-8')
                 redis_time = redis_time_new.decode('utf-8')
-            end_time = redis_time_new
+            end_time = redis_time
         # 拿到开始时间和结束时间了，然后去库里查，查出来数据内容和数据条数
         logger.info(f'bd_win_ticket_prize开始时间{start_time}')
         logger.info(f'bd_win_ticket_prize结束时间{end_time}')
