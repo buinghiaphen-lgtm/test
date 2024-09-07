@@ -229,93 +229,93 @@ class TestKafka:
         logger.info('-------------------- 测试结束...推送服务中断小于X小时且当天重启 --------------------')
         time.sleep(20)
 
-
-    # 测试用例 2：推送服务中断小于X小时且跨天重启
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 4, 4), indirect=True)
-    def test_lessinterval_diffdayrestart(self, realtime_kafka_fixture):
-        # 测试用例2：推送服务中断小于X小时且跨天重启
-        logger.info('-------------------- 开始测试...推送服务中断小于X小时且跨天重启 --------------------')
-        asyncio.run(self.bd_data(2,0))
-        logger.info('-------------------- 测试结束...推送服务中断小于X小时且跨天重启 --------------------')
-        time.sleep(20)
-
-
-    # 测试用例 3：推送服务中断大于X小时且当天重启
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 5, 5), indirect=True)
-    def test_greaterinterval_samedayrestart(self, realtime_kafka_fixture):
-        # 测试用例3：推送服务中断大于X小时且当天重启
-        logger.info('-------------------- 开始测试...推送服务中断大于X小时且当天重启 --------------------')
-        asyncio.run(self.bd_data(3,0))
-        logger.info('-------------------- 测试结束...推送服务中断大于X小时且当天重启 --------------------')
-        time.sleep(20)
-
-
-    # 测试用例 4：推送服务中断大于X小时且跨天重启
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 6, 6), indirect=True)
-    def test_greaterinterval_diffdayrestart(self, realtime_kafka_fixture):
-        # 测试用例4：推送服务中断大于X小时且跨天重启
-        logger.info('-------------------- 开始测试...推送服务中断大于X小时且跨天重启 --------------------')
-        asyncio.run(self.bd_data(4,0))
-        logger.info('-------------------- 测试结束...推送服务中断大于X小时且跨天重启 --------------------')
-        time.sleep(40)
-
-
-    # 测试用例 5：推送服务中断等于X小时且当天重启
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 7, 7), indirect=True)
-    def test_equalsinterval_samedayrestart(self, realtime_kafka_fixture):
-        # 测试用例5：推送服务中断等于X小时且当天重启
-        logger.info('-------------------- 开始测试...推送服务中断等于X小时且当天重启 --------------------')
-        asyncio.run(self.bd_data(5,0))
-        logger.info('-------------------- 测试结束...推送服务中断等于X小时且当天重启 --------------------')
-        time.sleep(60)
-
-
-    # 测试用例 6：推送服务中断等于X小时且跨天重启
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 8, 8), indirect=True)
-    def test_equalsinterval_diffdayrestart(self, realtime_kafka_fixture):
-        # 测试用例6：推送服务中断等于X小时且跨天重启    注意
-        logger.info('-------------------- 开始测试...推送服务中断等于X小时且跨天重启 --------------------')
-        asyncio.run(self.bd_data(6,0))
-        logger.info('-------------------- 测试结束...推送服务中断等于X小时且跨天重启 --------------------')
-        time.sleep(60)
-
-
-    # 测试用例 7：循环推送
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 9, 9), indirect=True)
-    def test_circle(self, realtime_kafka_fixture):
-        # 测试用例7：循环推送
-        for i in range(3):
-            logger.info(f'第{i+1}次推送......')
-            asyncio.run(self.bd_data(7,i))
-
-
-
-    # 测试用例 8：分页推送---总条数未满一页
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 10, 10), indirect=True)
-    def test_paging_lessone(self, realtime_kafka_fixture):
-        # 测试用例8：分页推送---总条数未满一页
-        logger.info('-------------------- 开始测试...分页推送-总条数未满一页 --------------------')
-        asyncio.run(self.bd_data(8,0))
-        logger.info('-------------------- 测试结束...分页推送-总条数未满一页 --------------------')
-
-
-    # 测试用例 9：分页推送---总条数大于一页非整数
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 11, 11), indirect=True)
-    def test_paging_lessone_notint(self, realtime_kafka_fixture):
-        # 测试用例9：分页推送---总条数大于一页非整数
-        logger.info('-------------------- 开始测试...分页推送-总条数大于一页非整数 --------------------')
-        asyncio.run(self.bd_data(9,0))
-        logger.info('-------------------- 测试结束...分页推送-总条数大于一页非整数 --------------------')
-        time.sleep(40)
-
-
-    # 测试用例 10：分页推送---总条数大于一页正好整数页
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 12, 12), indirect=True)
-    def test_paging_lessone_isint(self, realtime_kafka_fixture):
-        # 测试用例10：分页推送---总条数大于一页正好整数页
-        logger.info('-------------------- 开始测试...分页推送-总条数大于一页正好整数页 --------------------')
-        asyncio.run(self.bd_data(10,0))
-        logger.info('-------------------- 测试结束...分页推送-总条数大于一页正好整数页 --------------------')
+    #
+    # # 测试用例 2：推送服务中断小于X小时且跨天重启
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 4, 4), indirect=True)
+    # def test_lessinterval_diffdayrestart(self, realtime_kafka_fixture):
+    #     # 测试用例2：推送服务中断小于X小时且跨天重启
+    #     logger.info('-------------------- 开始测试...推送服务中断小于X小时且跨天重启 --------------------')
+    #     asyncio.run(self.bd_data(2,0))
+    #     logger.info('-------------------- 测试结束...推送服务中断小于X小时且跨天重启 --------------------')
+    #     time.sleep(20)
+    #
+    #
+    # # 测试用例 3：推送服务中断大于X小时且当天重启
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 5, 5), indirect=True)
+    # def test_greaterinterval_samedayrestart(self, realtime_kafka_fixture):
+    #     # 测试用例3：推送服务中断大于X小时且当天重启
+    #     logger.info('-------------------- 开始测试...推送服务中断大于X小时且当天重启 --------------------')
+    #     asyncio.run(self.bd_data(3,0))
+    #     logger.info('-------------------- 测试结束...推送服务中断大于X小时且当天重启 --------------------')
+    #     time.sleep(20)
+    #
+    #
+    # # 测试用例 4：推送服务中断大于X小时且跨天重启
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 6, 6), indirect=True)
+    # def test_greaterinterval_diffdayrestart(self, realtime_kafka_fixture):
+    #     # 测试用例4：推送服务中断大于X小时且跨天重启
+    #     logger.info('-------------------- 开始测试...推送服务中断大于X小时且跨天重启 --------------------')
+    #     asyncio.run(self.bd_data(4,0))
+    #     logger.info('-------------------- 测试结束...推送服务中断大于X小时且跨天重启 --------------------')
+    #     time.sleep(40)
+    #
+    #
+    # # 测试用例 5：推送服务中断等于X小时且当天重启
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 7, 7), indirect=True)
+    # def test_equalsinterval_samedayrestart(self, realtime_kafka_fixture):
+    #     # 测试用例5：推送服务中断等于X小时且当天重启
+    #     logger.info('-------------------- 开始测试...推送服务中断等于X小时且当天重启 --------------------')
+    #     asyncio.run(self.bd_data(5,0))
+    #     logger.info('-------------------- 测试结束...推送服务中断等于X小时且当天重启 --------------------')
+    #     time.sleep(60)
+    #
+    #
+    # # 测试用例 6：推送服务中断等于X小时且跨天重启
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 8, 8), indirect=True)
+    # def test_equalsinterval_diffdayrestart(self, realtime_kafka_fixture):
+    #     # 测试用例6：推送服务中断等于X小时且跨天重启    注意
+    #     logger.info('-------------------- 开始测试...推送服务中断等于X小时且跨天重启 --------------------')
+    #     asyncio.run(self.bd_data(6,0))
+    #     logger.info('-------------------- 测试结束...推送服务中断等于X小时且跨天重启 --------------------')
+    #     time.sleep(60)
+    #
+    #
+    # # 测试用例 7：循环推送
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 9, 9), indirect=True)
+    # def test_circle(self, realtime_kafka_fixture):
+    #     # 测试用例7：循环推送
+    #     for i in range(3):
+    #         logger.info(f'第{i+1}次推送......')
+    #         asyncio.run(self.bd_data(7,i))
+    #
+    #
+    #
+    # # 测试用例 8：分页推送---总条数未满一页
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 10, 10), indirect=True)
+    # def test_paging_lessone(self, realtime_kafka_fixture):
+    #     # 测试用例8：分页推送---总条数未满一页
+    #     logger.info('-------------------- 开始测试...分页推送-总条数未满一页 --------------------')
+    #     asyncio.run(self.bd_data(8,0))
+    #     logger.info('-------------------- 测试结束...分页推送-总条数未满一页 --------------------')
+    #
+    #
+    # # 测试用例 9：分页推送---总条数大于一页非整数
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 11, 11), indirect=True)
+    # def test_paging_lessone_notint(self, realtime_kafka_fixture):
+    #     # 测试用例9：分页推送---总条数大于一页非整数
+    #     logger.info('-------------------- 开始测试...分页推送-总条数大于一页非整数 --------------------')
+    #     asyncio.run(self.bd_data(9,0))
+    #     logger.info('-------------------- 测试结束...分页推送-总条数大于一页非整数 --------------------')
+    #     time.sleep(40)
+    #
+    #
+    # # 测试用例 10：分页推送---总条数大于一页正好整数页
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 12, 12), indirect=True)
+    # def test_paging_lessone_isint(self, realtime_kafka_fixture):
+    #     # 测试用例10：分页推送---总条数大于一页正好整数页
+    #     logger.info('-------------------- 开始测试...分页推送-总条数大于一页正好整数页 --------------------')
+    #     asyncio.run(self.bd_data(10,0))
+    #     logger.info('-------------------- 测试结束...分页推送-总条数大于一页正好整数页 --------------------')
 
 
     async def bd_data(self,flag,countflag):

@@ -2,7 +2,7 @@ from datetime import datetime,date,time,timedelta
 import json
 import os
 import re
-from setting import KUBE_CONFIG_FILE,DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER,REDIS_HOST,KAFKA_SERVER,realtime_redis_password,realtime_redis_master_name
+from setting import KUBE_CONFIG_FILE
 from common.k8s import  read_secret,read_configmap
 
 def getCurrentTime():
@@ -116,27 +116,8 @@ if KUBE_CONFIG_FILE.exists():
     realtime_redis_sentinel_address = redis_conn_dict['realtime_redis_node']
     realtime_redis_password = redis_password_dict['realtime_redis_password']
     realtime_redis_master_name = redis_conn_dict['realtime_sentinel_master']
-    #sp
-    sp_lock_redis_sentinel_address = redis_conn_dict['sp_lock_redis_node']
-    sp_lock_redis_password = redis_password_dict['sp_lock_redis_password']
-    sp_lock_redis_master_name = redis_conn_dict['sp_lock_sentinel_master']
     #kafka
     kafka_service_dict = read_configmap(
         'realtime-kafka-config',('kafka_url'))
     kafka_url = kafka_service_dict['kafka_url']
-else:
-    db_host = DB_HOST
-    db_port = DB_PORT
-    db_name = DB_NAME
-    db_user = DB_USER
-    db_password = DB_PASSWORD
-    #redis
-    realtime_redis_sentinel_address = REDIS_HOST
-    realtime_redis_password = realtime_redis_password
-    realtime_redis_master_name = realtime_redis_master_name
-    # sp_lock_redis_sentinel_address = REDIS_HOST
-    # sp_lock_redis_password = 'Vegas2.0'
-    # sp_lock_redis_master_name = 'mymaster'
-    #kafka
-    kafka_url = KAFKA_SERVER
 

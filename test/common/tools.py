@@ -6,7 +6,6 @@ from datetime import datetime
 from pathlib import Path
 import pylightxl as xl
 from kafka import TopicPartition, KafkaConsumer
-from setting import REDIS_HOST,REDIS_DB,REDIS_HNAME
 from common.data import kafka_url,db_host,db_port,db_user,db_password,db_name,realtime_redis_sentinel_address,realtime_redis_password,realtime_redis_master_name
 from setting import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
 # from setting import KAFKA_SERVER
