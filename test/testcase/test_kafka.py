@@ -90,8 +90,9 @@ def realtime_kafka_fixture(request):
         clear_paid_ticket_message()
         clear_win_ticket_prize_message()
         # 修改六个key的redis，redis_time是最后推送时间
-        logger.info("修改ticket时间为:",redis_time)
-        redis_request.hset('Ticket', str(redis_time))
+        datetime_test = datetime.strptime(redis_time, "%Y-%m-%d %H:%M:%S")
+        logger.info("修改ticket时间为:",datetime_test)
+        redis_request.hset('Ticket', str(datetime_test))
         redis_request.hset('cancel_ticket', redis_time)
         redis_request.hset('undo_ticket', redis_time)
         redis_request.hset('Win_ticket', redis_time)
