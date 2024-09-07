@@ -299,6 +299,9 @@ def select_from_ticket(begin_time, end_time):
     return selectResultListList, count
 
 def select_from_cancel_ticket(begin_time, end_time):
+    request_time=[]
+    request_time.append(begin_time)
+    request_time.append(end_time)
     select_sql = f'''
                 SELECT 
                     draw_id,
@@ -322,12 +325,12 @@ def select_from_cancel_ticket(begin_time, end_time):
                 WHERE 
                     cancel_status = 0 
                 AND 
-                    cancel_time BETWEEN '{begin_time}' AND '{end_time}' ORDER BY cancel_id;
+                    cancel_time BETWEEN %s AND %s ORDER BY cancel_id;
     '''
     # 获取的database的数据
     # select_result的数据：listdict格式 [ {字段名1:值1,字段名2:值2, 字段名3:值3}, {字段名1:值11,字段名2:值22, 字段名3:值33}  ]
     # select_descr的数据： [ 字段名1, 字段名2, 字段名3 ]
-    select_result, select_descr = get_mysql_data.MysqlDb().select_db_value_desc(select_sql)
+    select_result, select_descr = get_mysql_data.MysqlDb().select_db_val(select_sql,request_time)
     logger.info(f'select_result----{select_result}')
     # 将select_result的数据内容的值，做了个str()转换，转换之前判断是不是None，若为None，则为''，数据格式没变，还是listdict格式
     selectResultList = select_result_selection_to_str(select_result, select_descr)
