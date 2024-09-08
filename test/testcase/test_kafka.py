@@ -224,7 +224,7 @@ def realtime_kafka_fixture(request):
 class TestKafka:
 
     # 测试用例 1：推送服务中断小于X小时且当天重启
-    @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 3, 3), indirect=True)
+    # @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 3, 3), indirect=True)
     # def test_lessinterval_samedayrestart(self,realtime_kafka_fixture):
     #     # 测试用例1：推送服务中断小于X小时且当天重启 flag=1
     #     # 现在前置已经准备好了，现在要去kafka拿数据消费六种数据
