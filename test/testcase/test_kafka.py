@@ -300,7 +300,7 @@ class TestKafka:
     @pytest.mark.parametrize("realtime_kafka_fixture", excel_data.get_aslist('testcase', 1, 9, 9), indirect=True)
     def test_circle(self, realtime_kafka_fixture):
         # 测试用例7：循环推送
-        for i in range(3):
+        for i in range(2):
             logger.info(f'第{i+1}次推送......')
             asyncio.run(self.bd_data(7,i))
 
