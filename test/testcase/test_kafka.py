@@ -345,8 +345,8 @@ class TestKafka:
         # await task_bd_cancel_ticket
         # await task_bd_undo_ticket
         await task_bd_win_ticket
-        # await task_bd_paid_ticket
-        # await task_bd_win_ticket_prize
+        await task_bd_paid_ticket
+        await task_bd_win_ticket_prize
 
     async def bd_ticket(self, flag, countflag):
         start_time = ''
