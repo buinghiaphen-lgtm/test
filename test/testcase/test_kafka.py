@@ -136,7 +136,9 @@ def realtime_kafka_fixture(request):
         clear_paid_ticket_message()
         clear_win_ticket_prize_message()
         # 然后加数据
+        logger.info(f'current_time插入ticket表的时间{current_time}')
         proData.insert_into_ticket(current_time)
+        logger.info(f'current_time插入cancel_ticket表的时间{current_time}')
         proData.insert_into_cancel_ticket(current_time)
         proData.insert_into_undo_ticket(current_time)
         proData.insert_into_win_ticket(current_time)
