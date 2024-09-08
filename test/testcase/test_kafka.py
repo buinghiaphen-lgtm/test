@@ -330,8 +330,8 @@ class TestKafka:
         task_bd_paid_ticket = asyncio.create_task(self.bd_paid_ticket(flag, countflag))
         task_bd_win_ticket_prize = asyncio.create_task(self.bd_win_ticket_prize(flag, countflag))
         # await task_bd_ticket
-        await task_bd_cancel_ticket
-        # await task_bd_undo_ticket
+        # await task_bd_cancel_ticket
+        await task_bd_undo_ticket
         # await task_bd_win_ticket
         # await task_bd_paid_ticket
         # await task_bd_win_ticket_prize
