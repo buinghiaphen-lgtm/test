@@ -387,6 +387,8 @@ def select_from_undo_ticket(begin_time, end_time):
     # select_result的数据：listdict格式 [ {字段名1:值1,字段名2:值2, 字段名3:值3}, {字段名1:值11,字段名2:值22, 字段名3:值33}  ]
     # select_descr的数据： [ 字段名1, 字段名2, 字段名3 ]
     select_result, select_descr = get_mysql_data.MysqlDb().select_db_value_desc(select_sql)
+    logger.info(f'undo_ticket查询结果={select_result}')
+    logger.info(f'undo_ticket查询表头={select_descr}')
     # 将select_result的数据内容的值，做了个str()转换，转换之前判断是不是None，若为None，则为''，数据格式没变，还是listdict格式
     selectResultList = select_result_selection_to_str(select_result, select_descr)
     selectResultListList = extract_values(selectResultList)
