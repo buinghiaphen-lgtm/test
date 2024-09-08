@@ -289,7 +289,6 @@ class TestKafka:
     def test_circle(self, realtime_kafka_fixture):
         # 测试用例7：循环推送
         for i in range(3):
-            time.sleep(10)
             logger.info(f'第{i+1}次推送......')
             asyncio.run(self.bd_data(7,i))
 
@@ -324,7 +323,7 @@ class TestKafka:
 
 
     async def bd_data(self,flag,countflag):
-        # task_bd_ticket = asyncio.create_task(self.bd_ticket(flag, countflag))
+        task_bd_ticket = asyncio.create_task(self.bd_ticket(flag, countflag))
         task_bd_cancel_ticket = asyncio.create_task(self.bd_cancel_ticket(flag, countflag))
         task_bd_undo_ticket = asyncio.create_task(self.bd_undo_ticket(flag, countflag))
         task_bd_win_ticket = asyncio.create_task(self.bd_win_ticket(flag, countflag))
@@ -332,10 +331,10 @@ class TestKafka:
         task_bd_win_ticket_prize = asyncio.create_task(self.bd_win_ticket_prize(flag, countflag))
         # await task_bd_ticket
         await task_bd_cancel_ticket
-        await task_bd_undo_ticket
-        await task_bd_win_ticket
-        await task_bd_paid_ticket
-        await task_bd_win_ticket_prize
+        # await task_bd_undo_ticket
+        # await task_bd_win_ticket
+        # await task_bd_paid_ticket
+        # await task_bd_win_ticket_prize
 
     async def bd_ticket(self, flag, countflag):
         start_time = ''
