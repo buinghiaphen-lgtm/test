@@ -214,7 +214,7 @@ def realtime_kafka_fixture(request):
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
     yield
-    proData.delete_from_table()
+    # proData.delete_from_table()
     # if '分页推送' in data[0]:
     #     # 删除数据
     #     proData.delete_from_ticket_page()
