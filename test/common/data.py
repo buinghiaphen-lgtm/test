@@ -63,6 +63,15 @@ def getPageRedisTimeList(current_time, origdata) ->list:
     return data_list
 
 def extract_jdbc_info(jdbc_url):
+    '''数据库连接串解析
+    :return:
+        {
+            'host': host,
+            'port': port,
+            'dbname': dbname,
+            'params': params_dict
+        }
+    '''
     pattern = r'jdbc:mysql://(?P<host>[^:/?]+)(:(?P<port>\d+))?(?P<dbname>/[^?]+)?(\?(?P<params>.*))?'
     match = re.match(pattern, jdbc_url)
 
@@ -94,7 +103,9 @@ def extract_jdbc_info(jdbc_url):
         return None
 
 if KUBE_CONFIG_FILE.exists():
-    #db
+    '''
+    从kubesphere配置文件中获取数据库地址、redis地址、kafka地址
+    '''
     db_config_dict = read_secret(
         'tidb-secret',
         ('db_url', 'db_rw_password', 'db_rw_username', 'monitor_db_url'))

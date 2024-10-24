@@ -58,7 +58,7 @@ def realtime_kafka_fixture(request):
         # data[3]是测试数据未处理的中断重推最大时长
         # 先去修改k8s的配置，data[1]是推送时间间隔,data[2]是kafka一次最多推送N条数据,interval_time是中断重推最大时长
         config_key_list = ['second', 'count', 'intervalTime']
-        config_value_list = [str(data[1]), str(data[2]), str(interval_time)]
+        config_value_list = [str(data[1]), str(data[2]), str(interval_time),str(data[9])]
         # kubeconfig_path = None
         # kubeconfig_path = str(Path(BASE_DIR, "config", "kubeconfig.yaml"))
         namespace = load_client_config(kubeconfig_path)
@@ -116,7 +116,7 @@ def realtime_kafka_fixture(request):
         # data[3]是测试数据未处理的中断重推最大时长
         # 先去修改k8s的配置，data[1]是推送时间间隔,data[2]是kafka一次最多推送N条数据,interval_time是中断重推最大时长
         config_key_list = ['second', 'count', 'intervalTime']
-        config_value_list = [str(data[1]), str(data[2]), interval_time]
+        config_value_list = [str(data[1]), str(data[2]), interval_time,str(data[9])]
         # kubeconfig_path = None
         # kubeconfig_path = str(Path(BASE_DIR, "config", "kubeconfig.yaml"))
         namespace = load_client_config(kubeconfig_path)
@@ -178,7 +178,7 @@ def realtime_kafka_fixture(request):
         # data[3]是测试数据未处理的中断重推最大时长
         # 先去修改k8s的配置，data[1]是推送时间间隔,data[2]是kafka一次最多推送N条数据,interval_time是中断重推最大时长
         config_key_list = ['second', 'count', 'intervalTime']
-        config_value_list = [str(data[1]), str(data[2]), interval_time]
+        config_value_list = [str(data[1]), str(data[2]), interval_time,str(data[9])]
         # kubeconfig_path = None
         # kubeconfig_path = str(Path(BASE_DIR, "config", "kubeconfig.yaml"))
         namespace = load_client_config(kubeconfig_path)

@@ -158,6 +158,10 @@ def clear_win_ticket_prize_message():
         consumer.commit()
 
 def consume_bd_ticket_message(count:int):
+    '''KAFKA消费ticket消息
+    :return:
+        data_list:[]:[] _消费成功的数据
+    '''
     if count == 1:
         return []
     else:
@@ -199,6 +203,10 @@ def consume_bd_ticket_message(count:int):
         return data_list
 
 def consume_bd_cancel_ticket_message(count:int):
+    '''KAFKA消费cancel_ticket消息
+    :return:
+        data_list:[]:[] _消费成功的数据
+    '''
     if count == 1:
         return []
     else:
@@ -241,6 +249,10 @@ def consume_bd_cancel_ticket_message(count:int):
         return data_list
 
 def consume_bd_undo_ticket_message(count:int):
+    '''KAFKA消费undo_ticket消息
+     :return:
+         data_list:[]:[] _消费成功的数据
+     '''
     if count == 1:
         return []
     else:
@@ -283,6 +295,10 @@ def consume_bd_undo_ticket_message(count:int):
         return data_list
 
 def consume_bd_win_ticket_message(count:int):
+    '''KAFKA消费win_ticket消息
+     :return:
+         data_list:[]:[] _消费成功的数据
+     '''
     if count == 1:
         return []
     else:
@@ -325,6 +341,10 @@ def consume_bd_win_ticket_message(count:int):
         return data_list
 
 def consume_bd_paid_ticket_message(count:int):
+    '''KAFKA消费paid_ticket消息
+     :return:
+         data_list:[]:[] _消费成功的数据
+     '''
     if count == 1:
         return []
     else:
@@ -367,6 +387,10 @@ def consume_bd_paid_ticket_message(count:int):
         return data_list
 
 def consume_bd_win_ticket_prize_message(count:int):
+    '''KAFKA消费win_ticket_prize消息
+     :return:
+         data_list:[]:[] _消费成功的数据
+     '''
     if count == 1:
         return []
     else:
@@ -491,6 +515,11 @@ class Excel:
         return converted
 
     def __get_data(self, return_type, sheetname: str = None, keyrow: int = 1, begin: int = 2, end: int = None) -> list:
+        """根据入参数据类型，返回转换后的结果
+        Args:
+            return_type (_str): _允许的数据类型有：dict、list
+            sheetname (_str): _sheetName名称:获取测试数据的sheet名
+        """
         if return_type == 'dict' and not keyrow:
             raise ValueError('以字典形式返回数据时，必须要指定标题行keyrow')
         ws = self.__sheet(sheetname)
@@ -1177,6 +1206,11 @@ class Excel:
         return converted
 
     def __get_data(self, return_type, sheetname: str = None, keyrow: int = 1, begin: int = 2, end: int = None) -> list:
+        """根据入参数据类型，返回转换后的结果
+        Args:
+            return_type (_str): _允许的数据类型有：dict、list
+            sheetname (_str): _sheetName名称:获取测试数据的sheet名
+        """
         if return_type == 'dict' and not keyrow:
             raise ValueError('以字典形式返回数据时，必须要指定标题行keyrow')
         ws = self.__sheet(sheetname)

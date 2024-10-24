@@ -6,6 +6,7 @@ from common import get_mysql_data
 
 
 def insert_into_ticket(current_time):
+    """更新/插入 ticket表数据"""
     logger.info("正在准备ticket数据中......")
     ticket_datalist = getDataFromExcelSheet("ticket", current_time)
     #partion_list = getPartionList("ticket")
@@ -16,6 +17,9 @@ def insert_into_ticket(current_time):
     logger.info("ticket数据准备完毕......")
 
 def insert_into_ticket_page(current_time):
+    """分页更新/插入 ticket表数据
+    分页推送
+    """
     logger.info("正在准备ticket_page数据中......")
     ticket_page_datalist = getDataFromExcelSheet("ticket_page", current_time)
     # partion_list = getPartionList("ticket_page")
@@ -28,6 +32,7 @@ def insert_into_ticket_page(current_time):
     logger.info("ticket_page数据准备完毕......")
 
 def insert_into_cancel_ticket(current_time):
+    """更新/插入 cancel_ticket表数据"""
     logger.info("正在准备cancel_ticket数据中......")
     cancel_ticket_datalist = getDataFromExcelSheet("cancel_ticket", current_time)
     sql_insert_cancel_ticket = "REPLACE INTO cancel_ticket(draw_id,ticket_no,clerk_id," \
@@ -38,6 +43,7 @@ def insert_into_cancel_ticket(current_time):
     logger.info("cancel_ticket数据准备完毕......")
 
 def insert_into_cancel_ticket_page(current_time):
+    """分页更新/插入 cancel_ticket表数据"""
     logger.info("正在准备cancel_ticket_page数据中......")
     cancel_ticket_datalist = getDataFromExcelSheet("cancel_ticket_page", current_time)
     sql_insert_cancel_ticket = "REPLACE INTO cancel_ticket(draw_id,ticket_no,clerk_id," \
@@ -48,6 +54,7 @@ def insert_into_cancel_ticket_page(current_time):
     logger.info("cancel_ticket_page数据准备完毕......")
 
 def insert_into_undo_ticket(current_time):
+    """更新/插入 undo_ticket表数据"""
     logger.info("正在准备undo_ticket数据中......")
     undo_ticket_datalist = getDataFromExcelSheet("undo_ticket", current_time)
     sql_insert_undo_ticket = "REPLACE INTO undo_ticket(draw_id,ticket_no,undo_time,term_id,clerk_id," \
@@ -58,6 +65,7 @@ def insert_into_undo_ticket(current_time):
     logger.info("undo_ticket数据准备完毕......")
 
 def insert_into_undo_ticket_page(current_time):
+    """分页更新/插入 undo_ticket表数据"""
     logger.info("正在准备undo_ticket_page数据中......")
     undo_ticket_datalist = getDataFromExcelSheet("undo_ticket_page", current_time)
     sql_insert_undo_ticket = "REPLACE INTO undo_ticket(draw_id,ticket_no,undo_time,term_id,clerk_id," \
@@ -68,6 +76,7 @@ def insert_into_undo_ticket_page(current_time):
     logger.info("undo_ticket_page数据准备完毕......")
 
 def insert_into_win_ticket(current_time):
+    """更新/插入 win_ticket表数据"""
     logger.info("正在准备win_ticket数据中......")
     win_ticket_datalist = getDataFromExcelSheet("win_ticket", current_time)
     # partion_list = getPartionList("win_ticket")
@@ -81,6 +90,7 @@ def insert_into_win_ticket(current_time):
     logger.info("win_ticket数据准备完毕......")
 
 def insert_into_win_ticket_page(current_time):
+    """分页更新/插入 win_ticket表数据"""
     logger.info("正在准备win_ticket_page数据中......")
     win_ticket_datalist = getDataFromExcelSheet("win_ticket_page", current_time)
     # partion_list = getPartionList("win_ticket_page")
@@ -94,6 +104,7 @@ def insert_into_win_ticket_page(current_time):
     logger.info("win_ticket_page数据准备完毕......")
 
 def insert_into_paid_ticket(current_time):
+    """更新/插入 paid_ticket表数据"""
     logger.info("正在准备paid_ticket数据中......")
     win_ticket_datalist = getDataFromExcelSheet("paid_ticket", current_time)
     # partion_list = getPartionList("paid_ticket")
@@ -107,6 +118,7 @@ def insert_into_paid_ticket(current_time):
     logger.info("paid_ticket数据准备完毕......")
 
 def insert_into_paid_ticket_page(current_time):
+    """分页更新/插入 paid_ticket表数据"""
     logger.info("正在准备paid_ticket数据中......")
     win_ticket_datalist = getDataFromExcelSheet("paid_ticket_page", current_time)
     # partion_list = getPartionList("paid_ticket_page")
@@ -120,6 +132,7 @@ def insert_into_paid_ticket_page(current_time):
     logger.info("paid_ticket_page数据准备完毕......")
 
 def insert_into_win_ticket_prize(current_time):
+    """更新/插入 win_ticket_prize表数据"""
     logger.info("正在准备win_ticket_prize数据中......")
     win_ticket_prize_datalist = getDataFromExcelSheet("win_ticket_prize", current_time)
     sql_insert_win_ticket_prize = "REPLACE INTO win_ticket_prize(draw_id,ticket_no,win_prz_lvl,clerk_id,ticket_amt,eno,prz_cnt," \
@@ -130,6 +143,7 @@ def insert_into_win_ticket_prize(current_time):
     logger.info("win_ticket_prize数据准备完毕......")
 
 def insert_into_win_ticket_prize_page(current_time):
+    """分页更新/插入 win_ticket_prize表数据"""
     logger.info("正在准备win_ticket_prize_page数据中......")
     win_ticket_prize_datalist = getDataFromExcelSheet("win_ticket_prize_page", current_time)
     sql_insert_win_ticket_prize = "REPLACE INTO win_ticket_prize(draw_id,ticket_no,win_prz_lvl,clerk_id,ticket_amt,eno,prz_cnt," \
@@ -140,6 +154,7 @@ def insert_into_win_ticket_prize_page(current_time):
     logger.info("win_ticket_prize_page数据准备完毕......")
 
 def delete_from_ticket():
+    """删除 ticket表数据及分区"""
     logger.info("正在删除ticket测试数据中......")
     sql_delete_ticket = "DELETE FROM ticket WHERE ticket_id=%s AND draw_id=%s AND ticket_no=%s;;"
     ticket_list = getDataDeleteList("ticket")
@@ -151,6 +166,7 @@ def delete_from_ticket():
     logger.info("ticket测试数据删除完毕......")
 
 def delete_from_table():
+    """根据模糊查询删除 ticket、cancel_ticket、undo_ticket、win_ticket、win_ticket_prize表数据"""
     logger.info('开始删除测试数据')
     ticket_sql = 'DELETE FROM ticket WHERE ticket_no LIKE "9999999999%";'
     cancel_ticket_sql = 'DELETE FROM cancel_ticket WHERE ticket_no LIKE "9999999999%";'
@@ -171,6 +187,7 @@ def delete_from_table():
     logger.info('测试数据删除完毕')
 
 def delete_from_ticket_page():
+    """删除 ticket表分页测试数据"""
     logger.info("正在删除ticket_page测试数据中......")
     sql_delete_ticket = "DELETE FROM ticket WHERE ticket_id=%s AND draw_id=%s AND ticket_no=%s;;"
     ticket_list = getDataDeleteList("ticket_page")
@@ -182,6 +199,7 @@ def delete_from_ticket_page():
     logger.info("ticket_page测试数据删除完毕......")
 
 def delete_from_cancel_ticket():
+    """删除 cancel_ticket表测试数据"""
     logger.info("正在删除cancel_ticket测试数据中......")
     sql_delete_cancel_ticke = "DELETE FROM cancel_ticket WHERE cancel_id = %s;"
     cancel_id_list = getDataDeleteList("cancel_ticket")
@@ -189,6 +207,7 @@ def delete_from_cancel_ticket():
     logger.info("cancel_ticket测试数据删除完毕......")
 
 def delete_from_cancel_ticket_page():
+    """删除 cancel_ticket表分页测试数据"""
     logger.info("正在删除cancel_ticket_page数据......")
     sql_delete_cancel_ticke = "DELETE FROM cancel_ticket WHERE cancel_id = %s;"
     cancel_id_list = getDataDeleteList("cancel_ticket_page")
@@ -196,6 +215,7 @@ def delete_from_cancel_ticket_page():
     logger.info("cancel_ticket_page数据删除完毕......")
 
 def delete_from_undo_ticket():
+    """删除 undo_ticket表测试数据"""
     logger.info("正在删除undo_ticket测试数据中......")
     sql_delete_undo_ticket = "DELETE FROM undo_ticket WHERE undo_id = %s ;"
     undo_ticket_list = getDataDeleteList("undo_ticket")
@@ -203,6 +223,7 @@ def delete_from_undo_ticket():
     logger.info("undo_ticket测试数据删除完毕......")
 
 def delete_from_undo_ticket_page():
+    """删除 undo_ticket表分页测试数据"""
     logger.info("正在删除undo_ticket_page测试数据中......")
     sql_delete_undo_ticket = "DELETE FROM undo_ticket WHERE undo_id = %s ;"
     undo_ticket_list = getDataDeleteList("undo_ticket_page")
@@ -210,6 +231,7 @@ def delete_from_undo_ticket_page():
     logger.info("undo_ticket_page测试数据删除完毕......")
 
 def delete_from_win_ticket():
+    """删除 win_ticket表测试数据及分区"""
     logger.info("正在删除win_ticket测试数据中......")
     sql_delete_win_ticket = "DELETE FROM win_ticket WHERE draw_id=%s AND ticket_no=%s AND ticket_id=%s AND win_prz_lvl=%s ;"
     win_ticket_list = getDataDeleteList("win_ticket")
@@ -220,6 +242,7 @@ def delete_from_win_ticket():
     logger.info("win_ticket测试数据删除完毕......")
 
 def delete_from_win_ticket_page():
+    """删除 win_ticket表分页测试数据及分区"""
     logger.info("正在删除win_ticket_page测试数据中......")
     sql_delete_win_ticket_page = "DELETE FROM win_ticket WHERE draw_id=%s AND ticket_no=%s AND ticket_id=%s AND win_prz_lvl=%s ;"
     win_ticket_page_list = getDataDeleteList("win_ticket_page")
@@ -230,6 +253,7 @@ def delete_from_win_ticket_page():
     logger.info("win_ticket_page测试数据删除完毕......")
 
 def delete_from_paid_ticket():
+    """删除 win_ticket表测试数据及分区"""
     logger.info("正在删除paid_ticket测试数据中......")
     sql_delete_paid_ticket = "DELETE FROM win_ticket WHERE draw_id=%s AND ticket_no=%s AND ticket_id=%s AND win_prz_lvl=%s ;"
     paid_ticket_list = getDataDeleteList("paid_ticket")
@@ -240,6 +264,7 @@ def delete_from_paid_ticket():
     logger.info("paid_ticket测试数据删除完毕......")
 
 def delete_from_paid_ticket_page():
+    """删除 win_ticket表测试数据及分区"""
     logger.info("正在删除paid_ticket_page测试数据中......")
     sql_delete_paid_ticket_page = "DELETE FROM win_ticket WHERE draw_id=%s AND ticket_no=%s AND ticket_id=%s AND win_prz_lvl=%s ;"
     paid_ticket_page_list = getDataDeleteList("paid_ticket_page")
@@ -250,6 +275,7 @@ def delete_from_paid_ticket_page():
     logger.info("paid_ticket_page测试数据删除完毕......")
 
 def delete_from_win_ticket_prize():
+    """删除win_ticket_prize表测试数据"""
     logger.info("正在删除win_ticket_prize测试数据中......")
     sql_delete_win_ticket_prize = "DELETE FROM win_ticket_prize WHERE draw_id=%s AND ticket_no=%s AND win_prz_lvl=%s;"
     win_ticket_prize_list = getDataDeleteList("win_ticket_prize")
@@ -257,6 +283,7 @@ def delete_from_win_ticket_prize():
     logger.info("win_ticket_prize测试数据删除完毕......")
 
 def delete_from_win_ticket_prize_page():
+    """删除win_ticket_prize表分页测试数据"""
     logger.info("正在删除win_ticket_prize_page测试数据中......")
     sql_delete_win_ticket_prize_page = "DELETE FROM win_ticket_prize WHERE draw_id=%s AND ticket_no=%s AND win_prz_lvl=%s;"
     win_ticket_prize_page_list = getDataDeleteList("win_ticket_prize_page")
@@ -264,6 +291,11 @@ def delete_from_win_ticket_prize_page():
     logger.info("win_ticket_prize_page测试数据删除完毕......")
 
 def select_from_ticket(begin_time, end_time):
+    """查询ticket表测试数据
+            :return:
+            selectResultListList:list[list]
+            count：int
+    """
     select_sql = f'''
                     SELECT 
                         draw_id,
@@ -299,6 +331,11 @@ def select_from_ticket(begin_time, end_time):
     return selectResultListList, count
 
 def select_from_cancel_ticket(begin_time, end_time):
+    """查询cancel_ticket表测试数据
+            :return:
+            selectResultListList:list[list]
+            count：int
+    """
     select_sql = f'''
                 SELECT 
                     draw_id,
@@ -341,6 +378,11 @@ def select_from_cancel_ticket(begin_time, end_time):
     return selectResultListList, count
 
 def select_from_undo_ticket(begin_time, end_time):
+    """查询undo_ticket表测试数据
+            :return:
+            selectResultListList:list[list]
+            count：int
+    """
     select_sql = f'''
             SELECT 
                 ut.draw_id,  
@@ -400,6 +442,11 @@ def select_from_undo_ticket(begin_time, end_time):
     return selectResultListList, count
 
 def select_from_win_ticket(begin_time, end_time):
+    """查询win_ticket表测试数据
+            :return:
+            selectResultListList:list[list]
+            count：int
+    """
     select_sql = f'''
             SELECT 
                 draw_id,
@@ -448,6 +495,11 @@ def select_from_win_ticket(begin_time, end_time):
     return selectResultListList, count
 
 def select_from_paid_ticket(begin_time, end_time):
+    """查询win_ticket表分页测试数据
+            :return:
+            selectResultListList:list[list]
+            count：int
+    """
     select_sql = f'''
             SELECT 
                 draw_id,
@@ -496,6 +548,11 @@ def select_from_paid_ticket(begin_time, end_time):
     return selectResultListList, count
 
 def select_from_win_ticket_prize(begin_time, end_time):
+    """查询win_ticket_prize表测试数据
+            :return:
+            selectResultListList:list[list]
+            count：int
+    """
     select_sql = f'''
             SELECT 
                 wtp.draw_id,     
@@ -538,6 +595,12 @@ def select_from_win_ticket_prize(begin_time, end_time):
 # [{key1:value1,key2:value2,key3:value3},{key1:value11,key2:value22,key3:value33}]
 # 转成 [[value1,value2,value3],[value11,value22,value33]]
 def extract_values(listdictionary):
+    """数据类型处理
+    Args:
+        listdictionary [{},{}......]: _数组+字典类型
+    :return:
+        valuefinal:list[list] :[] _返回数组类型数据
+    """
     valuefinal = []
     for dictionary in listdictionary:
         values = []  # 创建一个空数组，用于存储字典的值
@@ -549,6 +612,12 @@ def extract_values(listdictionary):
     return valuefinal  # 返回存储值的数组
 
 def extract_ticket_values_add_title(listdictionary):
+    """ticket数据类型处理
+    Args:
+        listdictionary [{},{}......]: _数组+字典类型
+    :return:
+        valuefinal:list[list] :[] _返回数组类型数据
+    """
     if len(listdictionary)==0:
         return []
     title_list = list(listdictionary[0].keys())
@@ -567,6 +636,12 @@ def extract_ticket_values_add_title(listdictionary):
     return valuefinal  # 返回存储值的数组
 
 def extract_cancel_ticket_values_add_title(listdictionary):
+    """cancel_ticket数据类型处理
+    Args:
+        listdictionary [{},{}......]: _数组+字典类型
+    :return:
+        valuefinal:list[list] :[] _返回数组类型数据
+    """
     if len(listdictionary)==0:
         return []
     title_list = list(listdictionary[0].keys())
@@ -585,6 +660,12 @@ def extract_cancel_ticket_values_add_title(listdictionary):
     return valuefinal  # 返回存储值的数组
 
 def extract_undo_ticket_values_add_title(listdictionary):
+    """undo_ticket数据类型处理
+    Args:
+        listdictionary [{},{}......]: _数组+字典类型
+    :return:
+        valuefinal:list[list] :[] _返回数组类型数据
+    """
     if len(listdictionary)==0:
         return []
     title_list = list(listdictionary[0].keys())
@@ -603,6 +684,12 @@ def extract_undo_ticket_values_add_title(listdictionary):
     return valuefinal  # 返回存储值的数组
 
 def extract_win_ticket_values_add_title(listdictionary):
+    """win_ticket数据类型处理
+    Args:
+        listdictionary [{},{}......]: _数组+字典类型
+    :return:
+        valuefinal:list[list] :[] _返回数组类型数据
+    """
     if len(listdictionary)==0:
         return []
     title_list = list(listdictionary[0].keys())
@@ -621,6 +708,12 @@ def extract_win_ticket_values_add_title(listdictionary):
     return valuefinal  # 返回存储值的数组
 
 def extract_paid_ticket_values_add_title(listdictionary):
+    """paid_ticket数据类型处理
+    Args:
+        listdictionary [{},{}......]: _数组+字典类型
+    :return:
+        valuefinal:list[list] :[] _返回数组类型数据
+    """
     if len(listdictionary)==0:
         return []
     title_list = list(listdictionary[0].keys())
@@ -639,6 +732,12 @@ def extract_paid_ticket_values_add_title(listdictionary):
     return valuefinal  # 返回存储值的数组
 
 def extract_win_ticket_prize_values_add_title(listdictionary):
+    """win_ticket_prize数据类型处理
+    Args:
+        listdictionary [{},{}......]: _数组+字典类型
+    :return:
+        valuefinal:list[list] :[] _返回数组类型数据
+    """
     if len(listdictionary)==0:
         return []
     title_list = list(listdictionary[0].keys())
@@ -658,6 +757,13 @@ def extract_win_ticket_prize_values_add_title(listdictionary):
 
 
 def select_result_selection_to_str(select_result, select_desc) :
+    """数据类型处理
+    Args:
+        select_result  {__iter__}: _列表类型
+        select_desc  {__iter__}: _列表类型
+    :return:
+        select_result: {__iter__} :{} _返回列表类型数据
+    """
     for sr in select_result:
         for sd in select_desc:
             if sd == 'selection':
@@ -667,11 +773,26 @@ def select_result_selection_to_str(select_result, select_desc) :
             sr[sd] = str(sr[sd])
     return select_result
 def getDataFromExcelSheet(sheetname, current_time):
+    """数据类型处理
+    Args:
+        sheetname  str: _表格sheet页名称
+        current_time  str: _str字符串类型
+    :return:
+        listtuple: [] :[] _返回数组类型数据
+    """
     listlist = Excel(TEST_DATA_PATH).get_aslist(sheetname, 1, 3)
     listtuple = listlist_to_listtuple(listlist, sheetname, current_time)
     return listtuple
 
 def getAppointDate(tablename, origdata, current_time):
+    """数据类型处理
+    Args:
+        tablename  str: _str表名
+        origdata  str: _str测试数据中的时间
+        current_time str: _str当前时间
+    :return:
+        offset_time_str: str :str _返回字符类型数据
+    """
     if 'yesterdaytime' in origdata:
         yesterday_time = datetime.strptime(current_time, '%Y-%m-%d %H:%M:%S') + timedelta(days=-1)
         # yesterday_time = datetime.strptime(current_time, '%Y-%m-%d') + timedelta(days=-1)
@@ -702,6 +823,12 @@ def getAppointDate(tablename, origdata, current_time):
             return offset_time_str
 
 def getPartionList(sheetname:str) -> list:
+    """数据类型处理
+    Args:
+        sheetname  str: _表格sheet页名称
+    :return:
+        withpartionlist:  list[int] :[] _返回数组类型数据
+    """
     listlist = Excel(TEST_DATA_PATH).get_aslist(sheetname, 1, 3)
     withpartionlist = []
     if sheetname == "ticket" or sheetname == "ticket_page":
@@ -718,6 +845,12 @@ def getPartionList(sheetname:str) -> list:
         return withpartionlist
 
 def getDataDeleteList(sheetname):
+    """数据类型处理
+    Args:
+        sheetname  str: _表格sheet页名称
+    :return:
+        datalisttuple:  list[tuple[Any, Any, Any]] : list[tuple[Any, Any, Any] _数组+元组数据类型
+    """
     listlist = Excel(TEST_DATA_PATH).get_aslist(sheetname,1,3)
     returnlist = []
     if sheetname in ['cancel_ticket', 'undo_ticket', 'cancel_ticket_page', 'undo_ticket_page']:
@@ -745,6 +878,14 @@ def getDataDeleteList(sheetname):
 
 
 def listlist_to_listtuple(datalist:list, sheetname:str, current_time:str) -> list:
+    """数据类型处理
+    Args:
+        datalist  List[]:_数据数组
+        sheetname  str: _表格sheet页名称
+        current_time  str: _时间
+    :return:
+        datalisttuple:   list[tuple] :  list[tuple] _数组+元组数据类型
+    """
     datalisttuple = []
     if sheetname == 'ticket':
         for dataone in datalist:
@@ -843,6 +984,12 @@ def listlist_to_listtuple(datalist:list, sheetname:str, current_time:str) -> lis
 
 
 def raw_to_char(p_raw: str) -> str:
+    """数据类型处理
+    Args:
+        p_raw  str: _字符串类数据
+    :return:
+        v_result: str: str _字符串类型
+    """
     if p_raw == None:
         return ''
     v_result = ""
@@ -886,6 +1033,12 @@ def raw_to_char(p_raw: str) -> str:
 
 
 def ascii_to_mno(p_str: str) -> int:
+    """返回ascii码
+    Args:
+        p_str  str: _字符串类数据
+    :return:
+        (ord(p_str[0]) - 1) * 100 + (ord(p_str[1]) - 1): str: str _字符串类型
+    """
     return (ord(p_str[0]) - 1) * 100 + (ord(p_str[1]) - 1)
 
 

@@ -8,7 +8,7 @@ from common.data import db_host,db_port,db_name,db_user,db_password
 
 pymysql.install_as_MySQLdb()
 
-
+#数据格式转换
 conv = converters.conversions
 # conv[FIELD_TYPE.NEWDECIMAL] = float  # convert decimals to float
 conv[FIELD_TYPE.DATE] = str  # convert dates to strings
@@ -18,7 +18,7 @@ conv[FIELD_TYPE.TIME] = str  # convert dates to strings
 
 
 class MysqlDb:
-
+    """初始化地址"""
     def __init__(self):
         self.host = db_host
         self.port = db_port
@@ -29,7 +29,10 @@ class MysqlDb:
         self.client_flag = CLIENT.MULTI_STATEMENTS
 
     def select_db(self, sql):
-        """查询"""
+        """查询
+            :return:
+            tuple[tuple[Any, ...], ...]
+        """
         connection = pymysql.connect(host=self.host,
                                      port=self.port,
                                      user=self.user,
@@ -44,7 +47,11 @@ class MysqlDb:
                 return data
 
     def select_db_value_desc(self, sql):
-        """查询"""
+        """查询
+            :return:
+            data:tuple[tuple[Any, ...], ...]
+            des_list: list[str]
+        """
         connection = pymysql.connect(host=self.host,
                                      port=self.port,
                                      user=self.user,
@@ -63,7 +70,10 @@ class MysqlDb:
 
 
     def select_db_val(self, sql, val):
-        """查询"""
+        """查询
+            :return:
+            data:tuple[tuple[Any, ...], ...]
+        """
         connection = pymysql.connect(host=self.host,
                                      port=self.port,
                                      user=self.user,
@@ -78,7 +88,10 @@ class MysqlDb:
                 return data
 
     def execute_db(self, sql):
-        """更新/插入/删除"""
+        """更新/插入/删除
+            :return:
+            data:int 成功数量
+        """
         connection = pymysql.connect(host=self.host,
                                      port=self.port,
                                      user=self.user,
@@ -100,7 +113,10 @@ class MysqlDb:
             connection.close()
 
     def execute_db_val(self, sql, val):
-        """更新/插入/删除"""
+        """更新/插入/删除
+            :return:
+            data:int 成功数量
+        """
         connection = pymysql.connect(host=self.host,
                                      port=self.port,
                                      user=self.user,
@@ -120,7 +136,10 @@ class MysqlDb:
             connection.close()
     def executemany_db_val(self, sql, val):
         # val 传入的是一个列表
-        """更新/插入/删除"""
+        """更新/插入/删除
+            :return:
+            data:int 成功数量
+        """
         connection = pymysql.connect(host=self.host,
                                      port=self.port,
                                      user=self.user,
