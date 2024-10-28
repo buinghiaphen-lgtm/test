@@ -218,25 +218,25 @@ def realtime_kafka_fixture(request):
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
     yield
-    proData.delete_from_table()
-    if '分页推送' in data[0]:
-        # 删除数据
-        proData.delete_from_ticket_page()
-        proData.delete_from_cancel_ticket_page()
-        proData.delete_from_undo_ticket_page()
-        proData.delete_from_win_ticket_page()
-        proData.delete_from_paid_ticket_page()
-        proData.delete_from_win_ticket_prize_page()
-        proData.delete_from_game_draw()
-    else:
-        # 删除数据
-        proData.delete_from_ticket()
-        proData.delete_from_cancel_ticket()
-        proData.delete_from_undo_ticket()
-        proData.delete_from_win_ticket()
-        proData.delete_from_paid_ticket()
-        proData.delete_from_win_ticket_prize()
-        proData.delete_from_game_draw()
+    # proData.delete_from_table()
+    # if '分页推送' in data[0]:
+    #     # 删除数据
+    #     proData.delete_from_ticket_page()
+    #     proData.delete_from_cancel_ticket_page()
+    #     proData.delete_from_undo_ticket_page()
+    #     proData.delete_from_win_ticket_page()
+    #     proData.delete_from_paid_ticket_page()
+    #     proData.delete_from_win_ticket_prize_page()
+    #     proData.delete_from_game_draw()
+    # else:
+    #     # 删除数据
+    #     proData.delete_from_ticket()
+    #     proData.delete_from_cancel_ticket()
+    #     proData.delete_from_undo_ticket()
+    #     proData.delete_from_win_ticket()
+    #     proData.delete_from_paid_ticket()
+    #     proData.delete_from_win_ticket_prize()
+    #     proData.delete_from_game_draw()
 
 
 class TestKafka:
