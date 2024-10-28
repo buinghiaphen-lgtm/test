@@ -84,6 +84,7 @@ def realtime_kafka_fixture(request):
         proData.insert_into_win_ticket(current_time)
         proData.insert_into_paid_ticket(current_time)
         proData.insert_into_win_ticket_prize(current_time)
+        proData.insert_into_game_draw(current_time)
         # 清除KAFKA的消息
         clear_ticket_message()
         clear_cancel_ticket_message()
@@ -148,6 +149,8 @@ def realtime_kafka_fixture(request):
         proData.insert_into_paid_ticket(current_time)
         logger.info(f'current_time插入win_ticket_prize表的时间{current_time}')
         proData.insert_into_win_ticket_prize(current_time)
+        logger.info(f'current_time插入game_draw表的时间{current_time}')
+        proData.insert_into_game_draw(current_time)
         # 修改六个key的redis，redis_time是最后推送时间
         logger.info(f'redis_time修改redis中Ticket表的时间{redis_time}')
         redis_request.hset(kafkaLastTime,'Ticket', redis_time)
@@ -204,6 +207,7 @@ def realtime_kafka_fixture(request):
         proData.insert_into_win_ticket_page(current_time)
         proData.insert_into_paid_ticket_page(current_time)
         proData.insert_into_win_ticket_prize_page(current_time)
+        proData.insert_into_game_draw(current_time)
         # 修改六个key的redis，redis_time是最后推送时间
         redis_request.hset(kafkaLastTime,'Ticket', redis_time_list[0])
         redis_request.hset(kafkaLastTime,'cancel_ticket', redis_time_list[1])
@@ -214,23 +218,25 @@ def realtime_kafka_fixture(request):
         # 加完数据后重启服务
         restart_deployment(kubeconfig_path, namespace, deployment_name)
     yield
-    # proData.delete_from_table()
-    # if '分页推送' in data[0]:
-    #     # 删除数据
-    #     proData.delete_from_ticket_page()
-    #     proData.delete_from_cancel_ticket_page()
-    #     proData.delete_from_undo_ticket_page()
-    #     proData.delete_from_win_ticket_page()
-    #     proData.delete_from_paid_ticket_page()
-    #     proData.delete_from_win_ticket_prize_page()
-    # else:
-    #     # 删除数据
-    #     proData.delete_from_ticket()
-    #     proData.delete_from_cancel_ticket()
-    #     proData.delete_from_undo_ticket()
-    #     proData.delete_from_win_ticket()
-    #     proData.delete_from_paid_ticket()
-    #     proData.delete_from_win_ticket_prize()
+    proData.delete_from_table()
+    if '分页推送' in data[0]:
+        # 删除数据
+        proData.delete_from_ticket_page()
+        proData.delete_from_cancel_ticket_page()
+        proData.delete_from_undo_ticket_page()
+        proData.delete_from_win_ticket_page()
+        proData.delete_from_paid_ticket_page()
+        proData.delete_from_win_ticket_prize_page()
+        proData.delete_from_game_draw()
+    else:
+        # 删除数据
+        proData.delete_from_ticket()
+        proData.delete_from_cancel_ticket()
+        proData.delete_from_undo_ticket()
+        proData.delete_from_win_ticket()
+        proData.delete_from_paid_ticket()
+        proData.delete_from_win_ticket_prize()
+        proData.delete_from_game_draw()
 
 
 class TestKafka:

@@ -153,6 +153,18 @@ def insert_into_win_ticket_prize_page(current_time):
         sql_insert_win_ticket_prize, win_ticket_prize_datalist)
     logger.info("win_ticket_prize_page数据准备完毕......")
 
+"""增加game_draw表数据"""
+def insert_into_game_draw(current_time):
+    """更新/插入 game_draw表数据"""
+    logger.info("正在准备game_draw数据中......")
+    game_draw_datalist = getDataFromExcelSheet("game_draw", current_time)
+    sql_insert_game_draw = "REPLACE INTO game_draw(draw_id,paid_end_time,game_id,draw_year,draw_no,sale_begin_time,sale_end_time," \
+                                  "draw_status,draw_result,draw_type,prize_calculation,suspend_status,draw_time,paid_begin_time,game_type) " \
+                                  "VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    get_mysql_data.MysqlDb().executemany_db_val(
+        sql_insert_game_draw, game_draw_datalist)
+    logger.info("game_draw数据准备完毕......")
+
 def delete_from_ticket():
     """删除 ticket表数据及分区"""
     logger.info("正在删除ticket测试数据中......")
@@ -289,6 +301,15 @@ def delete_from_win_ticket_prize_page():
     win_ticket_prize_page_list = getDataDeleteList("win_ticket_prize_page")
     get_mysql_data.MysqlDb().executemany_db_val(sql_delete_win_ticket_prize_page, win_ticket_prize_page_list)
     logger.info("win_ticket_prize_page测试数据删除完毕......")
+
+def delete_from_game_draw():
+    """删除game_draw表测试数据"""
+    logger.info("正在删除game_draw测试数据中......")
+    sql_delete_win_ticket_prize_page = "DELETE FROM game_draw WHERE draw_id=%s ;"
+    game_draw_list = getDataDeleteList("game_draw")
+    get_mysql_data.MysqlDb().executemany_db_val(sql_delete_win_ticket_prize_page, game_draw_list)
+    logger.info("win_ticket_prize_page测试数据删除完毕......")
+
 
 def select_from_ticket(begin_time, end_time):
     """查询ticket表测试数据
@@ -810,6 +831,19 @@ def getAppointDate(tablename, origdata, current_time):
         second = origdata.split('todaydatetime')[1]
         today_time_str_return = today_time_str + second
         return today_time_str_return
+    if 'thisYear' in origdata:
+        current_time_data = datetime.strptime(current_time, '%Y-%m-%d  %H:%M:%S')
+        thisYear_time = current_time_data.year
+        thisYearMonthDay_time = datetime(thisYear_time, 1, 1)
+        YearMonthDay_endtime = thisYearMonthDay_time + timedelta(
+            days=365) if thisYearMonthDay_time.year % 4 == 0 else thisYearMonthDay_time + timedelta(days=364)
+        hms = origdata.split('thisYear')[1]
+        if hms == '0':
+            return_time = thisYearMonthDay_time.strftime('%Y-%m-%d 00:00:00')
+            return return_time
+        else:
+            return_time = YearMonthDay_endtime.strftime('%Y-%m-%d 23:59:59')
+            return return_time
     else:
         # 处理N秒的
         if tablename in ['ticket', 'paid_ticket', 'win_ticket_prize', 'ticket_page', 'paid_ticket_page', 'win_ticket_prize_page']:
@@ -875,6 +909,10 @@ def getDataDeleteList(sheetname):
             datat = (dataone[0], dataone[1], dataone[2])
             datalisttuple.append(datat)
         return datalisttuple
+    elif sheetname in ['game_draw']:
+        for dataone in listlist:
+            returnlist.append(dataone[0])
+        return returnlist
 
 
 def listlist_to_listtuple(datalist:list, sheetname:str, current_time:str) -> list:
@@ -978,6 +1016,16 @@ def listlist_to_listtuple(datalist:list, sheetname:str, current_time:str) -> lis
             dataone[9] = getAppointDate('win_ticket_prize_page', dataone[9], current_time)
             if dataone[10] == 'NULL':
                 dataone[10] = None
+            datat = tuple(dataone)
+            datalisttuple.append(datat)
+        return datalisttuple
+    elif sheetname == 'game_draw':
+        for dataone in datalist:
+            dataone[1] = getAppointDate('game_draw', dataone[1], current_time)
+            dataone[5] = getAppointDate('game_draw', dataone[5], current_time)
+            dataone[6] = getAppointDate('game_draw', dataone[6], current_time)
+            dataone[12] = getAppointDate('game_draw', dataone[12], current_time)
+            dataone[13] = getAppointDate('game_draw', dataone[13], current_time)
             datat = tuple(dataone)
             datalisttuple.append(datat)
         return datalisttuple
