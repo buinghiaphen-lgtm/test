@@ -335,6 +335,10 @@ def select_from_ticket(begin_time, end_time):
                         ticket
                     WHERE  
                         sale_time BETWEEN "{begin_time}" AND "{end_time}"
+                    and 
+                        draw_id in ( select draw_id
+                        from game_draw
+                        where sale_end_time >= "{begin_time}" and sale_begin_time <= "{end_time}")
                     ORDER BY draw_id ,ticket_no;
     '''
     # 获取的database的数据
