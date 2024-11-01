@@ -205,9 +205,9 @@ def delete_from_ticket_page():
     ticket_list = getDataDeleteList("ticket_page")
     get_mysql_data.MysqlDb().executemany_db_val(
         sql_delete_ticket, ticket_list)
-    sql_drop_partion_ticket = "ALTER TABLE ticket DROP PARTITION p%s;"
-    partion_ticket = getPartionList("ticket_page", "delete")
-    get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_ticket, partion_ticket)
+    # sql_drop_partion_ticket = "ALTER TABLE ticket DROP PARTITION p%s;"
+    # partion_ticket = getPartionList("ticket_page", "delete")
+    # get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_ticket, partion_ticket)
     logger.info("ticket_page测试数据删除完毕......")
 
 def delete_from_cancel_ticket():
@@ -248,9 +248,9 @@ def delete_from_win_ticket():
     sql_delete_win_ticket = "DELETE FROM win_ticket WHERE draw_id=%s AND ticket_no=%s AND ticket_id=%s AND win_prz_lvl=%s ;"
     win_ticket_list = getDataDeleteList("win_ticket")
     get_mysql_data.MysqlDb().executemany_db_val(sql_delete_win_ticket, win_ticket_list)
-    sql_drop_partion_win_ticket = "ALTER TABLE win_ticket DROP PARTITION p%s;"
-    partion_ticket = getPartionList("win_ticket", "delete")
-    res = get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_win_ticket, partion_ticket)
+    # sql_drop_partion_win_ticket = "ALTER TABLE win_ticket DROP PARTITION p%s;"
+    # partion_ticket = getPartionList("win_ticket", "delete")
+    # res = get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_win_ticket, partion_ticket)
     logger.info("win_ticket测试数据删除完毕......")
 
 def delete_from_win_ticket_page():
@@ -259,9 +259,9 @@ def delete_from_win_ticket_page():
     sql_delete_win_ticket_page = "DELETE FROM win_ticket WHERE draw_id=%s AND ticket_no=%s AND ticket_id=%s AND win_prz_lvl=%s ;"
     win_ticket_page_list = getDataDeleteList("win_ticket_page")
     get_mysql_data.MysqlDb().executemany_db_val(sql_delete_win_ticket_page, win_ticket_page_list)
-    sql_drop_partion_win_ticket_page = "ALTER TABLE win_ticket DROP PARTITION p%s;"
-    partion_ticket = getPartionList("win_ticket_page", "delete")
-    get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_win_ticket_page, partion_ticket)
+    # sql_drop_partion_win_ticket_page = "ALTER TABLE win_ticket DROP PARTITION p%s;"
+    # partion_ticket = getPartionList("win_ticket_page", "delete")
+    # get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_win_ticket_page, partion_ticket)
     logger.info("win_ticket_page测试数据删除完毕......")
 
 def delete_from_paid_ticket():
@@ -270,9 +270,9 @@ def delete_from_paid_ticket():
     sql_delete_paid_ticket = "DELETE FROM win_ticket WHERE draw_id=%s AND ticket_no=%s AND ticket_id=%s AND win_prz_lvl=%s ;"
     paid_ticket_list = getDataDeleteList("paid_ticket")
     get_mysql_data.MysqlDb().executemany_db_val(sql_delete_paid_ticket, paid_ticket_list)
-    sql_drop_partion_paid_ticket = "ALTER TABLE win_ticket DROP PARTITION p%s;"
-    partion_ticket = getPartionList("paid_ticket", "delete")
-    get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_paid_ticket, partion_ticket)
+    # sql_drop_partion_paid_ticket = "ALTER TABLE win_ticket DROP PARTITION p%s;"
+    # partion_ticket = getPartionList("paid_ticket", "delete")
+    # get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_paid_ticket, partion_ticket)
     logger.info("paid_ticket测试数据删除完毕......")
 
 def delete_from_paid_ticket_page():
@@ -281,9 +281,9 @@ def delete_from_paid_ticket_page():
     sql_delete_paid_ticket_page = "DELETE FROM win_ticket WHERE draw_id=%s AND ticket_no=%s AND ticket_id=%s AND win_prz_lvl=%s ;"
     paid_ticket_page_list = getDataDeleteList("paid_ticket_page")
     get_mysql_data.MysqlDb().executemany_db_val(sql_delete_paid_ticket_page, paid_ticket_page_list)
-    sql_drop_partion_paid_ticket_page = "ALTER TABLE win_ticket DROP PARTITION p%s;"
-    partion_ticket_page = getPartionList("paid_ticket_page", "delete")
-    get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_paid_ticket_page, partion_ticket_page)
+    # sql_drop_partion_paid_ticket_page = "ALTER TABLE win_ticket DROP PARTITION p%s;"
+    # partion_ticket_page = getPartionList("paid_ticket_page", "delete")
+    # get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_paid_ticket_page, partion_ticket_page)
     logger.info("paid_ticket_page测试数据删除完毕......")
 
 def delete_from_win_ticket_prize():
