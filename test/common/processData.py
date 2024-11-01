@@ -172,9 +172,9 @@ def delete_from_ticket():
     ticket_list = getDataDeleteList("ticket")
     get_mysql_data.MysqlDb().executemany_db_val(
         sql_delete_ticket, ticket_list)
-    sql_drop_partion_ticket = "ALTER TABLE ticket DROP PARTITION p%s;"
-    partion_ticket = getPartionList("ticket", "delete")
-    get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_ticket, partion_ticket)
+    # sql_drop_partion_ticket = "ALTER TABLE ticket DROP PARTITION p%s;"
+    # partion_ticket = getPartionList("ticket", "delete")
+    # get_mysql_data.MysqlDb().executemany_db_val( sql_drop_partion_ticket, partion_ticket)
     logger.info("ticket测试数据删除完毕......")
 
 def delete_from_table():
