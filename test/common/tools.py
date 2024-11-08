@@ -102,7 +102,7 @@ def clear_ticket_message():
     :return:
     '''
     consumer = KafkaConsumer(bootstrap_servers=kafka_url, auto_offset_reset='earliest',
-                             enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000)
+                             enable_auto_commit=True, group_id='test', consumer_timeout_ms=5000,api_version='3.7.1')
     consumer.assign([TopicPartition('bd_ticket', 0)])
     for message in consumer:
         consumer.commit()
