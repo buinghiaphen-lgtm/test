@@ -45,8 +45,10 @@ function Get-NewTag {
         return "$baseTag-0"
     }
     else {
-        # 找到最大版本号并加1
-        $maxTag = $matchingTags | ForEach-Object { $_ -match "-(\d+)$"; [int]$matches[1] } | Sort-Object -Descending | Select-Object -First 1
+        # 找到最大版本号并加1 - 修复版本号递增逻辑
+        $maxTag = $matchingTags | ForEach-Object { 
+            if ($_ -match "-(\d+)$") { [int]$matches[1] } 
+        } | Sort-Object -Descending | Select-Object -First 1
         Write-Host "Max tag: $maxTag"
         $newVersion = $maxTag + 1
         return "$baseTag-$($newVersion)"
