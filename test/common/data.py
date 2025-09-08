@@ -1,9 +1,11 @@
-from datetime import datetime,date,time,timedelta
 import json
 import os
 import re
+from datetime import date, datetime, time, timedelta
+
+from common.k8s import read_configmap, read_secret
 from setting import KUBE_CONFIG_FILE
-from common.k8s import  read_secret,read_configmap
+
 
 def getCurrentTime():
     '''获取当前时间
@@ -14,7 +16,8 @@ def getCurrentTime():
     current = datetime.now()
     current_time = current.strftime('%Y-%m-%d %H:%M:%S')
     hour = int(current.strftime('%H'))
-    return current_time,hour
+    return current_time, hour
+
 
 def getIntervalTime(current_hour, origdata):
     '''初始化中断重推最大时长
@@ -26,6 +29,7 @@ def getIntervalTime(current_hour, origdata):
     hour = current_hour + offset
     return hour
 
+
 def getRedisTime(current_time, current_hour, origdata):
     '''初始化redis最后推送时间
     :param current_time: 当前时间
@@ -36,11 +40,12 @@ def getRedisTime(current_time, current_hour, origdata):
     offset = int(origdata.split('Hour')[1])
     hour = current_hour + offset
     current = datetime.strptime(current_time, '%Y-%m-%d %H:%M:%S')
-    redis_time_str = current - timedelta(hours=hour)
+    redis_time_str = current - timedelta(hours=abs(hour))
     redis_time = redis_time_str.strftime('%Y-%m-%d %H:%M:%S')
     return redis_time
 
-def getPageRedisTimeList(current_time, origdata) ->list:
+
+def getPageRedisTimeList(current_time, origdata) -> list:
     '''初始化redis最后推送时间
     :param current_time: 当前时间
     :param origdata: 测试数据中的redis最后推送时间
@@ -61,6 +66,7 @@ def getPageRedisTimeList(current_time, origdata) ->list:
             redis_time_str = redis_time.strftime('%Y-%m-%d %H:%M:%S')
             data_list.append(redis_time_str)
     return data_list
+
 
 def extract_jdbc_info(jdbc_url):
     '''数据库连接串解析
@@ -102,6 +108,7 @@ def extract_jdbc_info(jdbc_url):
     else:
         return None
 
+
 if KUBE_CONFIG_FILE.exists():
     '''
     从kubesphere配置文件中获取数据库地址、redis地址、kafka地址
@@ -115,20 +122,21 @@ if KUBE_CONFIG_FILE.exists():
     db_name = db_conn_dict['dbname']
     db_user = db_config_dict['db_rw_username']
     db_password = db_config_dict['db_rw_password']
-    #redis_ip
+    # redis_ip
     redis_conn_dict = read_configmap(
         'service-config', ('realtime_redis_node', 'realtime_sentinel_master',
                            'sp_lock_redis_node', 'sp_lock_sentinel_master'))
-    #redis_pwd
+    # redis_pwd
     redis_password_dict = read_secret(
         'redis-rmq-secret',
         ('realtime_redis_password', 'sp_lock_redis_password'))
-    #realtime
+    # realtime
     realtime_redis_sentinel_address = redis_conn_dict['realtime_redis_node']
     realtime_redis_password = redis_password_dict['realtime_redis_password']
     realtime_redis_master_name = redis_conn_dict['realtime_sentinel_master']
-    #kafka
+    # kafka
     kafka_service_dict = read_configmap(
-        'realtime-kafka-config',('kafka_url'))
+        'realtime-kafka-config', ('kafka_url'))
     kafka_url = kafka_service_dict['kafka_url']
 
+    kafka_url = kafka_service_dict['kafka_url']
